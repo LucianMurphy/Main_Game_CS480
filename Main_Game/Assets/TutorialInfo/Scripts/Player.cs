@@ -4,6 +4,7 @@ using UnityEngine.InputSystem;
 public class Player : MonoBehaviour
 {
     public float moveSpeed = 0;
+    public float maxSpeed = 5f;
     private Rigidbody rb;
     private float movementX;
     private float movementY;
@@ -24,5 +25,6 @@ public class Player : MonoBehaviour
     {
         Vector3 movement = new Vector3(movementX, 0.0f, movementY);
         rb.AddForce(movement * moveSpeed);
+        rb.linearVelocity = Vector3.ClampMagnitude(rb.linearVelocity, maxSpeed);
     }
 }
