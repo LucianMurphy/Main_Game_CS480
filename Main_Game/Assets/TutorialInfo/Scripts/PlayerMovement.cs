@@ -67,4 +67,16 @@ public class PlayerMovement : MonoBehaviour
             buttonD.Execute(controller, speed);
         }
     }
+    private void OnControllerColliderHit(ControllerColliderHit hit)
+    {
+        // Check if the wall we bumped into has the active escape tag
+        if (hit.gameObject.CompareTag("escape_walls"))
+        {
+            GameManager gm = Object.FindAnyObjectByType<GameManager>();
+            if (gm != null) 
+            {
+                gm.RestartGame();
+            }
+        }
+    }
 }

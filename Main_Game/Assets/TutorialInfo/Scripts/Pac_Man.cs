@@ -9,6 +9,9 @@ public class PacAI : MonoBehaviour
     public float speed = 5.0f;
     public LayerMask wallLayer;
     public bool isGhostScared = false;
+    [Header("Escape Wall Setup")]
+    public GameObject[] specificEscapeWalls;
+    public bool escape_walls = false;
 
     private Vector3 currentDir = Vector3.forward;
     private float thinkTimer = 0f;
@@ -34,7 +37,6 @@ public class PacAI : MonoBehaviour
 
     void MoveContinuous()
     {
-        // Thin ray stop-check
         if (!Physics.Raycast(transform.position, currentDir, 0.55f, wallLayer))
         {
             transform.position += currentDir * speed * Time.deltaTime;
@@ -59,7 +61,7 @@ public class PacAI : MonoBehaviour
 
         foreach (Vector3 dir in dirs)
         {
-            // Physical clearance check
+            // hopefully wont run into walls with this code
             if (Physics.SphereCast(transform.position, 0.3f, dir, out RaycastHit hit, 0.6f, wallLayer))
             {
                 continue;
@@ -67,7 +69,7 @@ public class PacAI : MonoBehaviour
 
             float score = BetterEvaluationScore(transform.position + dir);
 
-            // Penalize 180s heavily to stop the jitter/dancing
+            // stops a bug where he just dances intead of moving 
             if (Vector3.Dot(dir, currentDir) < -0.9f) score -= 20f;
             if (dir == currentDir) score += 1f;
 
@@ -84,6 +86,7 @@ public class PacAI : MonoBehaviour
     {
         float score = 0;
         GameObject[] pips = GameObject.FindGameObjectsWithTag("Pip");
+        GameObject[] pellets = GameObject.FindGameObjectsWithTag("Pellet");
         
         float nearestGhostPathDist = 999f;
         float nearestScaredGhostPathDist = 999f;
@@ -106,18 +109,24 @@ public class PacAI : MonoBehaviour
             }
         }
 
-        // 1. GHOST DANGER (Path-aware)
+        // run from ghost when its not scared 
         if (!isGhostScared && nearestGhostPathDist < 2f) return float.NegativeInfinity;
         if (!isGhostScared) score -= 10.0f / (nearestGhostPathDist + 1.0f);
 
-        // 2. GHOST HUNTING (Path-aware)
-        // If the ghost is scared, this is the #1 priority
+        // chase ghost when it is scared 
         if (isGhostScared && nearestScaredGhostPathDist < 999f)
         {
             score += 500.0f / (nearestScaredGhostPathDist + 1.0f);
         }
 
-        // 3. FOOD (Path-aware)
+        // get pellet
+        if (pellets.Length > 0)
+        {
+            float pelletDist = PacAStarToTag(pos, "Pip");
+            score += 40.0f / (pelletDist + 1.0f); 
+        }
+
+        // get food 
         score -= 10f * pips.Length;
         if (pips.Length > 0)
         {
@@ -128,7 +137,7 @@ public class PacAI : MonoBehaviour
         return score;
     }
 
-    // A* that looks for a specific world position (for ghosts)
+    // A* that looks for ghosts 
     float PacAStarToTarget(Vector3 startPos, Vector3 targetPos)
     {
         Vector2Int start = new Vector2Int(Mathf.RoundToInt(startPos.x), Mathf.RoundToInt(startPos.z));
@@ -169,7 +178,8 @@ public class PacAI : MonoBehaviour
         return 999f;
     }
 
-    // A* that looks for a tag (for food)
+    // A* that looks fore pellets and pips 
+    private Collider[] detectionBuffer = new Collider[10];
     float PacAStarToTag(Vector3 startPos, string tag)
     {
         Vector2Int start = new Vector2Int(Mathf.RoundToInt(startPos.x), Mathf.RoundToInt(startPos.z));
@@ -184,7 +194,21 @@ public class PacAI : MonoBehaviour
             limit++;
             Vector2Int current = openSet.Dequeue();
             Vector3 checkPos = new Vector3(current.x, transform.position.y, current.y);
+            // OPTIMIZATION: Non-allocating physics check
+            // This replaces .OverlapSphere().Any()
+            int numColliders = Physics.OverlapSphereNonAlloc(checkPos, 0.45f, detectionBuffer);
+            
+            for (int i = 0; i < numColliders; i++)
+            {
+                if (detectionBuffer[i].CompareTag(tag))
+                {
+                    return gScore[current];
+                }
+            }
 
+            // Neighbors check
+            Vector2Int[] directions = { Vector2Int.up, Vector2Int.down, Vector2Int.left, Vector2Int.right };
+           
             if (Physics.OverlapSphere(checkPos, 0.45f).Any(h => h.CompareTag(tag)))
                 return gScore[current];
 
@@ -205,14 +229,26 @@ public class PacAI : MonoBehaviour
         }
         return 999f;
     }
-
+    //if eat pellet chase pacman
     private void OnTriggerEnter(Collider other)
     {
-        if (other.CompareTag("Pip")) Destroy(other.gameObject);
+        if (other.CompareTag("Pip")) 
+        {
+            Destroy(other.gameObject);
+        }
         else if (other.CompareTag("Pellet"))
         {
             Destroy(other.gameObject);
             isGhostScared = true;
+            escape_walls = true;
+            foreach (GameObject wall in specificEscapeWalls)
+            {
+                if (wall != null)
+                {
+                    wall.tag = "escape_walls";
+                }
+            }
+
         }
         else if (other.CompareTag("Ghost"))
         {
@@ -225,9 +261,10 @@ public class PacAI : MonoBehaviour
                 gm.Win();
         }
     }
-
-    
 }
+
+
+
 
 public class PriorityQueue<TElement, TPriority> where TPriority : System.IComparable<TPriority>
 {
