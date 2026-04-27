@@ -9,6 +9,7 @@ TagManager:
   - Ghost
   - Pellet
   - PacMan
+  - escape_walls
   layers:
   - Default
   - TransparentFX
