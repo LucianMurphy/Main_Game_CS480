@@ -4378,7 +4378,7 @@ GameObject:
   - component: {fileID: 2057487505}
   m_Layer: 0
   m_Name: Pellet Folder
-  m_TagString: Pellet
+  m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
