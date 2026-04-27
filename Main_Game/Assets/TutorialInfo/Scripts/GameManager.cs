@@ -18,6 +18,8 @@ public class GameManager : MonoBehaviour
     {
         if (gameOver) return;
         gameOver = true;
+        Cursor.lockState = CursorLockMode.None;
+        Cursor.visible = true;
         if (WinPanel != null) WinPanel.SetActive(true);
     }
 
@@ -25,6 +27,8 @@ public class GameManager : MonoBehaviour
     {
         if (gameOver) return;
         gameOver = true;
+        Cursor.lockState = CursorLockMode.None;
+        Cursor.visible = true;
         if (LosePanel != null) LosePanel.SetActive(true);
     }
 
