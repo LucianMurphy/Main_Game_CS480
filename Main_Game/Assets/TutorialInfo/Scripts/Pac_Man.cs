@@ -214,6 +214,16 @@ public class PacAI : MonoBehaviour
             Destroy(other.gameObject);
             isGhostScared = true;
         }
+        else if (other.CompareTag("Ghost"))
+        {
+            GameManager gm = FindObjectOfType<GameManager>();
+            if (gm == null) return;
+
+            if (isGhostScared)
+                gm.Lose();
+            else
+                gm.Win();
+        }
     }
 
     

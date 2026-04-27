@@ -8,6 +8,7 @@ TagManager:
   - Pip
   - Ghost
   - Pellet
+  - PacMan
   layers:
   - Default
   - TransparentFX
