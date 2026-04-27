@@ -59,7 +59,7 @@ public class PacAI : MonoBehaviour
 
         foreach (Vector3 dir in dirs)
         {
-            
+            // Physical clearance check
             if (Physics.SphereCast(transform.position, 0.3f, dir, out RaycastHit hit, 0.6f, wallLayer))
             {
                 continue;
@@ -67,7 +67,7 @@ public class PacAI : MonoBehaviour
 
             float score = BetterEvaluationScore(transform.position + dir);
 
-            // He would do a dance and not advance and this seemed to fix it 
+            // Penalize 180s heavily to stop the jitter/dancing
             if (Vector3.Dot(dir, currentDir) < -0.9f) score -= 20f;
             if (dir == currentDir) score += 1f;
 
@@ -84,7 +84,6 @@ public class PacAI : MonoBehaviour
     {
         float score = 0;
         GameObject[] pips = GameObject.FindGameObjectsWithTag("Pip");
-        GameObject[] pellets = GameObject.FindGameObjectsWithTag("Pellet");
         
         float nearestGhostPathDist = 999f;
         float nearestScaredGhostPathDist = 999f;
@@ -93,7 +92,8 @@ public class PacAI : MonoBehaviour
         {
             if (g == null) continue;
             
-            
+            // CRITICAL FIX: Use A* Path distance for ghosts, not straight lines
+            // This prevents Pac-Man from staring at a ghost through a wall
             float pathDist = PacAStarToTarget(pos, g.transform.position);
 
             if (!isGhostScared)
@@ -106,24 +106,18 @@ public class PacAI : MonoBehaviour
             }
         }
 
-        // if the ghost isnt scared run away 
-        if (!isGhostScared && nearestGhostPathDist < 3f) return float.NegativeInfinity;
+        // 1. GHOST DANGER (Path-aware)
+        if (!isGhostScared && nearestGhostPathDist < 2f) return float.NegativeInfinity;
         if (!isGhostScared) score -= 10.0f / (nearestGhostPathDist + 1.0f);
 
-        // if it is scared run it down 
+        // 2. GHOST HUNTING (Path-aware)
+        // If the ghost is scared, this is the #1 priority
         if (isGhostScared && nearestScaredGhostPathDist < 999f)
         {
             score += 500.0f / (nearestScaredGhostPathDist + 1.0f);
         }
-        // go towards the pellet
-        if (pellets.Length > 0)
-        {
-            float pelletDist = PacAStarToTag(pos, "Pellet");
-            score += 40.0f / (pelletDist + 1.0f);
-        }
 
-
-        // go towards pips
+        // 3. FOOD (Path-aware)
         score -= 10f * pips.Length;
         if (pips.Length > 0)
         {
@@ -134,6 +128,7 @@ public class PacAI : MonoBehaviour
         return score;
     }
 
+    // A* that looks for a specific world position (for ghosts)
     float PacAStarToTarget(Vector3 startPos, Vector3 targetPos)
     {
         Vector2Int start = new Vector2Int(Mathf.RoundToInt(startPos.x), Mathf.RoundToInt(startPos.z));
@@ -174,6 +169,7 @@ public class PacAI : MonoBehaviour
         return 999f;
     }
 
+    // A* that looks for a tag (for food)
     float PacAStarToTag(Vector3 startPos, string tag)
     {
         Vector2Int start = new Vector2Int(Mathf.RoundToInt(startPos.x), Mathf.RoundToInt(startPos.z));
