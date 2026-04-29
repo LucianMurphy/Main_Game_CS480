@@ -24,6 +24,7 @@ public class PacAI : MonoBehaviour
     void Start()
     {
         ghosts = GameObject.FindGameObjectsWithTag("Ghost");
+        if (statusText != null) statusText.text = "<b><color=black>Objective:</color></b> <color=green>Hunt Pac-Man</color>";
     }
 
     void Update()
@@ -245,7 +246,7 @@ public class PacAI : MonoBehaviour
             Destroy(other.gameObject);
             isGhostScared = true;
             escape_walls = true;
-            if (statusText != null) statusText.text = "Run!";
+            if (statusText != null) statusText.text = "<b><color=black>Objective:</color></b> <color=red>Run!</color>";
             foreach (GameObject wall in specificEscapeWalls)
             {
                 if (wall != null)
