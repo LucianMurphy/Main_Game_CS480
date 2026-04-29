@@ -2,6 +2,7 @@ using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using TMPro;
 
 public class PacAI : MonoBehaviour
 {
@@ -12,6 +13,9 @@ public class PacAI : MonoBehaviour
     [Header("Escape Wall Setup")]
     public GameObject[] specificEscapeWalls;
     public bool escape_walls = false;
+
+    [Header("UI")]
+    public TMP_Text statusText;
 
     private Vector3 currentDir = Vector3.forward;
     private float thinkTimer = 0f;
@@ -241,6 +245,7 @@ public class PacAI : MonoBehaviour
             Destroy(other.gameObject);
             isGhostScared = true;
             escape_walls = true;
+            if (statusText != null) statusText.text = "Run!";
             foreach (GameObject wall in specificEscapeWalls)
             {
                 if (wall != null)
