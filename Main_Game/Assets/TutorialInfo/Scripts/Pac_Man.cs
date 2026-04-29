@@ -252,7 +252,7 @@ public class PacAI : MonoBehaviour
             Destroy(other.gameObject);
             isGhostScared = true;
             escape_walls = true;
-            if (statusText != null) statusText.text = "<b><color=black>Objective:</color></b> <color=red>Run!</color>";
+            if (statusText != null) statusText.text = "<b><color=black>Objective:</color></b> <color=red>Escape or Stay and Collect</color>";
             foreach (GameObject wall in specificEscapeWalls)
             {
                 if (wall != null)
