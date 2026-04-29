@@ -115,9 +115,15 @@ public class PacAI : MonoBehaviour
         }
 
         // run from ghost when its not scared 
-        if (!isGhostScared && nearestGhostPathDist < 2f) return float.NegativeInfinity;
-        if (!isGhostScared) score -= 10.0f / (nearestGhostPathDist + 1.0f);
-
+        if (!isGhostScared && nearestGhostPathDist < 4f) 
+        {
+            return float.NegativeInfinity;
+        }
+        // This is commented out just in case 
+        // if (!isGhostScared) 
+        // {
+        //     score -= 10.0f / (nearestGhostPathDist + 1.0f);
+        // }
         // chase ghost when it is scared 
         if (isGhostScared && nearestScaredGhostPathDist < 999f)
         {
