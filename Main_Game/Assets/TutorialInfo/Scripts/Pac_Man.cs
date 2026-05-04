@@ -120,10 +120,10 @@ public class PacAI : MonoBehaviour
             return float.NegativeInfinity;
         }
         // This is commented out just in case 
-        // if (!isGhostScared) 
-        // {
-        //     score -= 10.0f / (nearestGhostPathDist + 1.0f);
-        // }
+        if (!isGhostScared) 
+        {
+             score -= 10.0f / (nearestGhostPathDist + 1.0f);
+        }
         // chase ghost when it is scared 
         if (isGhostScared && nearestScaredGhostPathDist < 999f)
         {
