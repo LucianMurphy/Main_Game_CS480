@@ -40,6 +40,19 @@ public class PacAI : MonoBehaviour
         MoveContinuous();
     }
 
+    bool CanSeeGhost(GameObject Ghost)
+    {
+        Vector3 directionToGhost = Ghost.transform.position - transform.position;
+        float distanceToGhost = directionToGhost.magnitude;
+        //checks to see if there is a wall in the way
+        if(Physics.Raycast(transform.position, directionToGhost, 
+                            out RaycastHit hit, distanceToGhost, wallLayer))
+        {
+            return false;
+        }
+        return true;
+
+    }
     void MoveContinuous()
     {
         if (!Physics.Raycast(transform.position, currentDir, 0.55f, wallLayer))
@@ -100,19 +113,23 @@ public class PacAI : MonoBehaviour
         {
             if (g == null) continue;
             
-            // CRITICAL FIX: Use A* Path distance for ghosts, not straight lines
             // This prevents Pac-Man from staring at a ghost through a wall
             float pathDist = PacAStarToTarget(pos, g.transform.position);
 
             if (!isGhostScared)
             {
-                if (pathDist < nearestGhostPathDist) nearestGhostPathDist = pathDist;
+                if (pathDist < nearestGhostPathDist) 
+                {
+                    nearestGhostPathDist = pathDist;
+                }
             }
             else
             {
-                if (pathDist < nearestScaredGhostPathDist) nearestScaredGhostPathDist = pathDist;
+                if (pathDist < nearestScaredGhostPathDist) 
+                {
+                    nearestScaredGhostPathDist = pathDist;
+                }
             }
-        }
 
         // run from ghost when its not scared 
         if (!isGhostScared && nearestGhostPathDist < 4f) 
