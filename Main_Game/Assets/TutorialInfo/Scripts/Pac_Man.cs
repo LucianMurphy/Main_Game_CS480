@@ -19,6 +19,8 @@ public class PacAI : MonoBehaviour
 
     private Vector3 currentDir = Vector3.forward;
     private float thinkTimer = 0f;
+
+    private float lastSeenGhost = 0f;
     private GameObject[] ghosts;
 
     void Start()
@@ -40,6 +42,19 @@ public class PacAI : MonoBehaviour
         MoveContinuous();
     }
 
+    bool CanSeeGhost(GameObject Ghost)
+    {
+        Vector3 directionToGhost = Ghost.transform.position - transform.position;
+        float distanceToGhost = directionToGhost.magnitude;
+        //checks to see if there is a wall in the way
+        if(Physics.Raycast(transform.position, directionToGhost, 
+                            out RaycastHit hit, distanceToGhost, wallLayer))
+        {
+            return false;
+        }
+        return true;
+
+    }
     void MoveContinuous()
     {
         if (!Physics.Raycast(transform.position, currentDir, 0.55f, wallLayer))
@@ -92,7 +107,8 @@ public class PacAI : MonoBehaviour
         float score = 0;
         GameObject[] pips = GameObject.FindGameObjectsWithTag("Pip");
         GameObject[] pellets = GameObject.FindGameObjectsWithTag("Pellet");
-        
+
+        bool seeGhost = false;
         float nearestGhostPathDist = 999f;
         float nearestScaredGhostPathDist = 999f;
 
@@ -100,30 +116,53 @@ public class PacAI : MonoBehaviour
         {
             if (g == null) continue;
             
-            // CRITICAL FIX: Use A* Path distance for ghosts, not straight lines
             // This prevents Pac-Man from staring at a ghost through a wall
             float pathDist = PacAStarToTarget(pos, g.transform.position);
 
             if (!isGhostScared)
             {
-                if (pathDist < nearestGhostPathDist) nearestGhostPathDist = pathDist;
+                if(CanSeeGhost(g))
+                {
+                    seeGhost = true;
+                    lastSeenGhost = Time.time;
+                    if (pathDist < nearestGhostPathDist) 
+                    {
+                        nearestGhostPathDist = pathDist;
+                    }
+                } 
             }
             else
             {
-                if (pathDist < nearestScaredGhostPathDist) nearestScaredGhostPathDist = pathDist;
+                if (pathDist < nearestScaredGhostPathDist) 
+                {
+                    nearestScaredGhostPathDist = pathDist;
+                }
             }
         }
-
+        bool pacPanicing = (Time.time - lastSeenGhost) <= 4.0f;
         // run from ghost when its not scared 
-        if (!isGhostScared && nearestGhostPathDist < 4f) 
+        if (!isGhostScared && pacPanicing)
         {
-            return float.NegativeInfinity;
+                if (seeGhost)
+                {
+                    score -= 10.0f / (nearestGhostPathDist + 1.0f);
+                }
+                if (nearestGhostPathDist < 4f)
+                {
+                    return float.NegativeInfinity;
+                }
+                score -= 10.0f / (nearestGhostPathDist + 1.0f);
+
         }
-        // This is commented out just in case 
-        if (!isGhostScared) 
-        {
-             score -= 10.0f / (nearestGhostPathDist + 1.0f);
-        }
+        // if (!isGhostScared && nearestGhostPathDist < 4f) 
+        // {
+        //     return float.NegativeInfinity;
+        // }
+        // // This is commented out just in case 
+        // if (!isGhostScared) 
+        // {
+        //     score -= 10.0f / (nearestGhostPathDist + 1.0f);
+        // }
         // chase ghost when it is scared 
         if (isGhostScared && nearestScaredGhostPathDist < 999f)
         {
