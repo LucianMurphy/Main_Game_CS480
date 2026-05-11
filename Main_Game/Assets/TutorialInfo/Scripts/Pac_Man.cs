@@ -19,6 +19,7 @@ public class PacAI : MonoBehaviour
 
     private Vector3 currentDir = Vector3.forward;
     private float thinkTimer = 0f;
+    private bool isStunned = false;
 
     private float lastSeenGhost = 0f;
     private GameObject[] ghosts;
@@ -31,6 +32,8 @@ public class PacAI : MonoBehaviour
 
     void Update()
     {
+        if (isStunned) return;
+
         thinkTimer += Time.deltaTime;
         if (thinkTimer >= 0.1f)
         {
@@ -40,6 +43,18 @@ public class PacAI : MonoBehaviour
         }
 
         MoveContinuous();
+    }
+
+    public void Stun(float duration)
+    {
+        StartCoroutine(StunRoutine(duration));
+    }
+
+    private System.Collections.IEnumerator StunRoutine(float duration)
+    {
+        isStunned = true;
+        yield return new WaitForSeconds(duration);
+        isStunned = false;
     }
 
     bool CanSeeGhost(GameObject Ghost)
@@ -303,6 +318,10 @@ public class PacAI : MonoBehaviour
         }
         else if (other.CompareTag("Ghost"))
         {
+            // Check if the player has a shield or invincibility active.
+            PlayerStatus ps = other.GetComponent<PlayerStatus>();
+            if (ps != null && ps.TryAbsorbHit()) return;
+
             GameManager gm = FindObjectOfType<GameManager>();
             if (gm == null) return;
 
