@@ -187,16 +187,16 @@ public class PacAI : MonoBehaviour
         // get pellet
         if (pellets.Length > 0)
         {
-            float pelletDist = PacAStarToTag(pos, "Pip");
-            score += 40.0f / (pelletDist + 1.0f); 
+            float pelletDist = PacAStarToTag(pos, "Pellet");
+            score += 4000.0f / (pelletDist + 1.0f); 
         }
-
+        //broken code need to fix after playtest 
         // get food 
         score -= 10f * pips.Length;
         if (pips.Length > 0)
         {
             float foodDist = PacAStarToTag(pos, "Pip");
-            score += 20.0f / (foodDist + 1.0f); 
+            score += 1.0f / (foodDist + 1.0f); 
         }
 
         return score;
@@ -254,7 +254,7 @@ public class PacAI : MonoBehaviour
         gScore[start] = 0;
 
         int limit = 0;
-        while (openSet.Count > 0 && limit < 150) 
+        while (openSet.Count > 0 && limit < 1000) 
         {
             limit++;
             Vector2Int current = openSet.Dequeue();
@@ -273,9 +273,10 @@ public class PacAI : MonoBehaviour
 
             // Neighbors check
             Vector2Int[] directions = { Vector2Int.up, Vector2Int.down, Vector2Int.left, Vector2Int.right };
-           
-            if (Physics.OverlapSphere(checkPos, 0.45f).Any(h => h.CompareTag(tag)))
-                return gScore[current];
+
+            //checking to see if this helps it might be added back later 
+            // if (Physics.OverlapSphere(checkPos, 0.45f).Any(h => h.CompareTag(tag)))
+            //     return gScore[current];
 
             foreach (Vector2Int d in new[] { Vector2Int.up, Vector2Int.down, Vector2Int.left, Vector2Int.right })
             {
