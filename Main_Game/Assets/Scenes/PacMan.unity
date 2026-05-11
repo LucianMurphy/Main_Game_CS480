@@ -1045,6 +1045,11 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 276780213}
   m_CullTransparentMesh: 1
+--- !u!1 &316029547 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 3916591376802742868, guid: 968c1f0d2d753d54ca12533606e36344, type: 3}
+  m_PrefabInstance: {fileID: 1076816444}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &329346597
 GameObject:
   m_ObjectHideFlags: 0
@@ -2740,6 +2745,11 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 958780934}
   m_CullTransparentMesh: 1
+--- !u!1 &961426199 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 2869762338984183222, guid: 968c1f0d2d753d54ca12533606e36344, type: 3}
+  m_PrefabInstance: {fileID: 1076816444}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &982717322
 GameObject:
   m_ObjectHideFlags: 0
@@ -3095,6 +3105,14 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 2869762338984183222, guid: 968c1f0d2d753d54ca12533606e36344, type: 3}
+      propertyPath: m_Name
+      value: Escape_wall
+      objectReference: {fileID: 0}
+    - target: {fileID: 3916591376802742868, guid: 968c1f0d2d753d54ca12533606e36344, type: 3}
+      propertyPath: m_Name
+      value: Escape_wall
+      objectReference: {fileID: 0}
     - target: {fileID: 6106102150941433945, guid: 968c1f0d2d753d54ca12533606e36344, type: 3}
       propertyPath: m_Name
       value: 3x3_map_w_pips
@@ -6467,11 +6485,11 @@ PrefabInstance:
     - target: {fileID: 3056500377609458562, guid: 6ed56ed6234a9ee4b85ae7deedc910b4, type: 3}
       propertyPath: 'specificEscapeWalls.Array.data[0]'
       value: 
-      objectReference: {fileID: 0}
+      objectReference: {fileID: 961426199}
     - target: {fileID: 3056500377609458562, guid: 6ed56ed6234a9ee4b85ae7deedc910b4, type: 3}
       propertyPath: 'specificEscapeWalls.Array.data[1]'
       value: 
-      objectReference: {fileID: 0}
+      objectReference: {fileID: 316029547}
     - target: {fileID: 5695454112865698091, guid: 6ed56ed6234a9ee4b85ae7deedc910b4, type: 3}
       propertyPath: m_CastShadows
       value: 1

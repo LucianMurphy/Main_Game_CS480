@@ -25,6 +25,18 @@ public class PlayerStatus : MonoBehaviour
         originalScale = transform.localScale;
         if (cc != null) originalControllerRadius = cc.radius;
     }
+    //for picking up the pips 
+    private void OnTriggerEnter(Collider other)
+    {
+        if (other.CompareTag("Pip"))
+        {
+            // Give 10 money for example
+            GameData.Instance.AddRoundMoney(10); 
+            
+            // Destroy the pip
+            Destroy(other.gameObject);
+        }
+    }
 
     public void ActivateShield()
     {

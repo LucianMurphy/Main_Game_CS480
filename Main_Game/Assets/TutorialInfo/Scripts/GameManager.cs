@@ -14,7 +14,8 @@ public class GameManager : MonoBehaviour
     }
 
     // PacMan (not scared) catches the player -> player is killed, go to shop.
-    public void Win()
+    //swapped the names of win and lose
+    public void Lose()
     {
         if (gameOver) return;
         gameOver = true;
@@ -24,7 +25,7 @@ public class GameManager : MonoBehaviour
     }
 
     // PacMan (scared) is caught by the player -> whole-game win, show panel.
-    public void Lose()
+    public void Win()
     {
         if (gameOver) return;
         gameOver = true;
