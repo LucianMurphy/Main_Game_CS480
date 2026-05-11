@@ -22,6 +22,7 @@ public class PacAI : MonoBehaviour
     private bool isStunned = false;
 
     private float lastSeenGhost = 0f;
+    private float pelletWeight = 0f;
     private GameObject[] ghosts;
 
     void Start()
@@ -106,7 +107,8 @@ public class PacAI : MonoBehaviour
 
             // stops a bug where he just dances intead of moving 
             if (Vector3.Dot(dir, currentDir) < -0.9f) score -= 20f;
-            if (dir == currentDir) score += 1f;
+            // changed this to .1 instead of 1 to help looping when not finding food 
+            if (dir == currentDir) score += 0.1f;
 
             if (score > bestScore)
             {
@@ -188,7 +190,7 @@ public class PacAI : MonoBehaviour
         if (pellets.Length > 0)
         {
             float pelletDist = PacAStarToTag(pos, "Pellet");
-            score += 4000.0f / (pelletDist + 1.0f); 
+            score += 40.0f / (pelletDist + 1.0f); 
         }
         //broken code need to fix after playtest 
         // get food 
