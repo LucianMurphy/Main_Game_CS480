@@ -5392,6 +5392,27 @@ Transform:
   - {fileID: 133392222}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &1740648562 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 7876321719041048999, guid: 6ed56ed6234a9ee4b85ae7deedc910b4, type: 3}
+  m_PrefabInstance: {fileID: 6974121122602788675}
+  m_PrefabAsset: {fileID: 0}
+--- !u!111 &1740648570
+Animation:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1740648562}
+  m_Enabled: 1
+  serializedVersion: 4
+  m_Animation: {fileID: 0}
+  m_Animations: []
+  m_WrapMode: 0
+  m_PlayAutomatically: 1
+  m_AnimatePhysics: 0
+  m_UpdateMode: 0
+  m_CullingType: 0
 --- !u!4 &1743307464 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 3831225738193015235, guid: d1a88671fc071c44584a452d8ce75549, type: 3}
@@ -7198,6 +7219,34 @@ PrefabInstance:
       propertyPath: 'specificEscapeWalls.Array.data[1]'
       value: 
       objectReference: {fileID: 823956035}
+    - target: {fileID: 5695454112865698091, guid: 6ed56ed6234a9ee4b85ae7deedc910b4, type: 3}
+      propertyPath: m_CastShadows
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 5695454112865698091, guid: 6ed56ed6234a9ee4b85ae7deedc910b4, type: 3}
+      propertyPath: m_LightProbeUsage
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5695454112865698091, guid: 6ed56ed6234a9ee4b85ae7deedc910b4, type: 3}
+      propertyPath: m_LightmapParameters
+      value: 
+      objectReference: {fileID: 0}
+    - target: {fileID: 5695454112865698091, guid: 6ed56ed6234a9ee4b85ae7deedc910b4, type: 3}
+      propertyPath: m_StitchLightmapSeams
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 5695454112865698091, guid: 6ed56ed6234a9ee4b85ae7deedc910b4, type: 3}
+      propertyPath: m_Materials.Array.size
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 5695454112865698091, guid: 6ed56ed6234a9ee4b85ae7deedc910b4, type: 3}
+      propertyPath: 'm_Materials.Array.data[0]'
+      value: 
+      objectReference: {fileID: 2100000, guid: 01df7ad55b5244c4791157a1844776ae, type: 2}
+    - target: {fileID: 5695454112865698091, guid: 6ed56ed6234a9ee4b85ae7deedc910b4, type: 3}
+      propertyPath: 'm_Materials.Array.data[1]'
+      value: 
+      objectReference: {fileID: 2100000, guid: 01df7ad55b5244c4791157a1844776ae, type: 2}
     - target: {fileID: 5778910178475312842, guid: 6ed56ed6234a9ee4b85ae7deedc910b4, type: 3}
       propertyPath: m_LocalScale.x
       value: 0.8
@@ -7250,6 +7299,10 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 7475528569712517897, guid: 6ed56ed6234a9ee4b85ae7deedc910b4, type: 3}
+      propertyPath: m_Mesh
+      value: 
+      objectReference: {fileID: 4300000, guid: 07b805cc50f7b21469eb77045e84e87c, type: 3}
     - target: {fileID: 7710800410328520092, guid: 6ed56ed6234a9ee4b85ae7deedc910b4, type: 3}
       propertyPath: m_IsTrigger
       value: 1
@@ -7258,10 +7311,17 @@ PrefabInstance:
       propertyPath: m_Name
       value: PacMan
       objectReference: {fileID: 0}
+    - target: {fileID: 7876321719041048999, guid: 6ed56ed6234a9ee4b85ae7deedc910b4, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 1
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 7876321719041048999, guid: 6ed56ed6234a9ee4b85ae7deedc910b4, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1740648570}
   m_SourcePrefab: {fileID: 100100000, guid: 6ed56ed6234a9ee4b85ae7deedc910b4, type: 3}
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
