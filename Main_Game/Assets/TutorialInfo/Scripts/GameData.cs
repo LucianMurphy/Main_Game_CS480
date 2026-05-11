@@ -18,7 +18,7 @@ public class GameData : MonoBehaviour
         }
     }
 
-    public int BankedMoney        { get; private set; } = 0;
+    public int BankedMoney        { get; private set; } = 1000;
     public int RoundMoney         { get; private set; } = 0;
     public int RoundMoneyEarned   { get; private set; } = 0;
     public bool PlayerEscapedLastRound { get; private set; } = false;
