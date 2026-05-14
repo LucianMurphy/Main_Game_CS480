@@ -23,7 +23,7 @@ GameObject:
   m_TagString: PacMan
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
+  m_StaticEditorFlags: 1
   m_IsActive: 1
 --- !u!4 &5778910178475312842
 Transform:
@@ -112,7 +112,7 @@ SphereCollider:
     serializedVersion: 2
     m_Bits: 0
   m_LayerOverridePriority: 0
-  m_IsTrigger: 0
+  m_IsTrigger: 1
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
@@ -135,7 +135,9 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 64
   isGhostScared: 0
-  specificEscapeWalls: []
+  specificEscapeWalls:
+  - {fileID: 0}
+  - {fileID: 0}
   escape_walls: 0
   statusText: {fileID: 0}
 --- !u!54 &6670685763906740342
