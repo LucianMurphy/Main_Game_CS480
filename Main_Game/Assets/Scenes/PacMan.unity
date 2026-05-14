@@ -6415,7 +6415,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6810813758894051762, guid: 6f086f840ed7f3e40bedd6490453965d, type: 3}
       propertyPath: m_LocalPosition.x
-      value: -0.11199951
+      value: 0.17
       objectReference: {fileID: 0}
     - target: {fileID: 6810813758894051762, guid: 6f086f840ed7f3e40bedd6490453965d, type: 3}
       propertyPath: m_LocalPosition.y
@@ -6423,7 +6423,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6810813758894051762, guid: 6f086f840ed7f3e40bedd6490453965d, type: 3}
       propertyPath: m_LocalPosition.z
-      value: 1.9499998
+      value: 1.81
       objectReference: {fileID: 0}
     - target: {fileID: 6810813758894051762, guid: 6f086f840ed7f3e40bedd6490453965d, type: 3}
       propertyPath: m_LocalRotation.w
@@ -6478,6 +6478,26 @@ PrefabInstance:
       propertyPath: statusText
       value: 
       objectReference: {fileID: 750429279}
+    - target: {fileID: 1021610630816934548, guid: 6ed56ed6234a9ee4b85ae7deedc910b4, type: 3}
+      propertyPath: m_Enabled
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1963565289245279033, guid: 6ed56ed6234a9ee4b85ae7deedc910b4, type: 3}
+      propertyPath: Mute
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1963565289245279033, guid: 6ed56ed6234a9ee4b85ae7deedc910b4, type: 3}
+      propertyPath: MaxDistance
+      value: 20
+      objectReference: {fileID: 0}
+    - target: {fileID: 1963565289245279033, guid: 6ed56ed6234a9ee4b85ae7deedc910b4, type: 3}
+      propertyPath: spreadCustomCurve.m_Curve.Array.data[0].value
+      value: 0.0027777778
+      objectReference: {fileID: 0}
+    - target: {fileID: 2003112330739471531, guid: 6ed56ed6234a9ee4b85ae7deedc910b4, type: 3}
+      propertyPath: m_Enabled
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 3056500377609458562, guid: 6ed56ed6234a9ee4b85ae7deedc910b4, type: 3}
       propertyPath: specificEscapeWalls.Array.size
       value: 2

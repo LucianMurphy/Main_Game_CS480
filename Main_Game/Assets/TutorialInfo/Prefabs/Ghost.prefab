@@ -159,7 +159,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerMovement
   controller: {fileID: 5808769407807378506}
-  baseSpeed: 12
+  baseSpeed: 5
   speedMultiplier: 1
 --- !u!143 &5808769407807378506
 CharacterController:
