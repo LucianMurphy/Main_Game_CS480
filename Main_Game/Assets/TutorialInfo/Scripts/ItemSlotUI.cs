@@ -12,8 +12,12 @@ public class ItemSlotUI : MonoBehaviour
 
     public void SetItem(ItemType type)
     {
+        ItemData data = ItemCatalog.Items[type];
+
         emptyIndicator.SetActive(false);
         itemIcon.gameObject.SetActive(true);
+        itemIcon.sprite = data.icon;
+        itemIcon.enabled = data.icon != null;
         grayOverlay.gameObject.SetActive(false);
         timerText.gameObject.SetActive(false);
     }
