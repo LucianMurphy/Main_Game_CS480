@@ -25,8 +25,14 @@ public class PacAI : MonoBehaviour
     private float pelletWeight = 0f;
     private GameObject[] ghosts;
 
+    [Header("Terrain Setup")]
+    public LayerMask groundLayer;
+    public float heightOffset = 0.5f;
+
+    private Rigidbody rb;
     void Start()
     {
+        rb = GetComponent<Rigidbody>();
         ghosts = GameObject.FindGameObjectsWithTag("Ghost");
         if (statusText != null) statusText.text = "<b><color=black>Objective:</color></b> <color=green>Hunt Pac-Man</color>";
     }
@@ -51,6 +57,15 @@ public class PacAI : MonoBehaviour
         StartCoroutine(StunRoutine(duration));
     }
 
+    private Vector3 GetTerrainPos(Vector3 targetPos)
+    {
+        Vector3 rayStart = new Vector3(targetPos.x, targetPos.y + 5f, targetPos.z);
+        if (Physics.Raycast(rayStart, Vector3.down, out RaycastHit hit, 10f, groundLayer))
+        {
+            return new Vector3(targetPos.x, hit.point.y + heightOffset, targetPos.z);
+        }
+        return targetPos;
+    }
     private System.Collections.IEnumerator StunRoutine(float duration)
     {
         isStunned = true;
@@ -73,9 +88,13 @@ public class PacAI : MonoBehaviour
     }
     void MoveContinuous()
     {
-        if (!Physics.Raycast(transform.position, currentDir, 0.55f, wallLayer))
+        Vector3 rayStart = transform.position + (Vector3.up * 0.2f);
+
+        if (!Physics.Raycast(rayStart, currentDir, 0.55f, wallLayer))
         {
-            transform.position += currentDir * speed * Time.deltaTime;
+            Vector3 nextPos = transform.position + currentDir * speed * Time.deltaTime;
+            transform.position = GetTerrainPos(nextPos);
+            
         }
         else 
         {
@@ -98,7 +117,8 @@ public class PacAI : MonoBehaviour
         foreach (Vector3 dir in dirs)
         {
             // hopefully wont run into walls with this code
-            if (Physics.SphereCast(transform.position, 0.3f, dir, out RaycastHit hit, 0.6f, wallLayer))
+            Vector3 castStart = transform.position + (Vector3.up * 0.2f);
+            if (Physics.SphereCast(castStart, 0.3f, dir, out RaycastHit hit, 0.6f, wallLayer))
             {
                 continue;
             }
@@ -227,9 +247,11 @@ public class PacAI : MonoBehaviour
             foreach (Vector2Int d in new[] { Vector2Int.up, Vector2Int.down, Vector2Int.left, Vector2Int.right })
             {
                 Vector2Int neighbor = current + d;
-                Vector3 nWorld = new Vector3(neighbor.x, transform.position.y, neighbor.y);
+                Vector3 flatWorld = new Vector3(neighbor.x, transform.position.y, neighbor.y);
 
-                if (!Physics.CheckSphere(nWorld, 0.45f, wallLayer))
+                
+
+                if (!Physics.CheckSphere(flatWorld, 0.45f, wallLayer))
                 {
                     float tentG = gScore[current] + 1;
                     if (!gScore.ContainsKey(neighbor) || tentG < gScore[neighbor])
@@ -260,10 +282,12 @@ public class PacAI : MonoBehaviour
         {
             limit++;
             Vector2Int current = openSet.Dequeue();
-            Vector3 checkPos = new Vector3(current.x, transform.position.y, current.y);
+
+            Vector3 flatCheckPos = new Vector3(current.x, transform.position.y, current.y);
+
             // OPTIMIZATION: Non-allocating physics check
             // This replaces .OverlapSphere().Any()
-            int numColliders = Physics.OverlapSphereNonAlloc(checkPos, 0.45f, detectionBuffer);
+            int numColliders = Physics.OverlapSphereNonAlloc(flatCheckPos, 0.45f, detectionBuffer);
             
             for (int i = 0; i < numColliders; i++)
             {
@@ -283,8 +307,10 @@ public class PacAI : MonoBehaviour
             foreach (Vector2Int d in new[] { Vector2Int.up, Vector2Int.down, Vector2Int.left, Vector2Int.right })
             {
                 Vector2Int neighbor = current + d;
-                Vector3 nWorld = new Vector3(neighbor.x, transform.position.y, neighbor.y);
-                if (!Physics.CheckSphere(nWorld, 0.45f, wallLayer))
+                Vector3 flatWorld = new Vector3(neighbor.x, transform.position.y, neighbor.y);
+                
+
+                if (!Physics.CheckSphere(flatWorld, 0.45f, wallLayer))
                 {
                     float tentG = gScore[current] + 1;
                     if (!gScore.ContainsKey(neighbor) || tentG < gScore[neighbor])
