@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: 8ec1cc36f0315db469e1283267f4ee6e
+NativeFormatImporter:
+  externalObjects: {}
+  mainObjectFileID: 9100000
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 159973
+  packageName: Hunter
+  packageVersion: 1.0
+  assetPath: Assets/Hunter_1/Hunter Animator Controller.controller
+  uploadId: 389426

@@ -1,0 +1,16 @@
+fileFormatVersion: 2
+guid: 259f72d2184fc1b48ba7b3e9a190cd14
+ShaderImporter:
+  externalObjects: {}
+  defaultTextures: []
+  nonModifiableTextures: []
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 159973
+  packageName: Hunter
+  packageVersion: 1.0
+  assetPath: Assets/Hunter_1/Stand/Standard-2Sided.shader
+  uploadId: 389426
