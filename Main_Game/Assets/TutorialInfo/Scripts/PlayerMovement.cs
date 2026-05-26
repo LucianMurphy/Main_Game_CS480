@@ -3,27 +3,22 @@ using UnityEngine.InputSystem;
 
 public abstract class Command
 {
-    public abstract void Execute(CharacterController controller, float speed, float velocityY);
+    public abstract Vector3 Execute(Transform playerTransform, float speed);
 }
 
 public class MoveCommand : Command
 {
     private Vector3 direction;
-    private float gravity = -20f;
     public MoveCommand(Vector3 dir)
     {
         direction = dir;
     }
 
-    public override void Execute(CharacterController controller, float speed, float velocityY)
+    public override Vector3 Execute(Transform playerTransform, float speed)
     {
-        Vector3 worldDir = controller.transform.TransformDirection(direction);
+        Vector3 worldDir = playerTransform.TransformDirection(direction);
 
-        Vector3 movement = (worldDir * speed) + (Vector3.up * velocityY);
-        
-        controller.Move(movement * Time.deltaTime);
-
-        
+        return worldDir * speed;        
     }
 }
 
@@ -52,6 +47,9 @@ public class PlayerMovement : MonoBehaviour
 
     void Update()
     {
+
+        if (controller == null || !controller.enabled || !controller.gameObject.activeInHierarchy) return;
+
         if (Keyboard.current == null) return;
 
         float currentSpeed = baseSpeed * speedMultiplier;
@@ -65,17 +63,28 @@ public class PlayerMovement : MonoBehaviour
             velocityY += Time.deltaTime * gravity;
         }
 
-        
+        Vector3 finalMovement = Vector3.zero;
 
-        if (Keyboard.current.wKey.isPressed) buttonW.Execute(controller, currentSpeed, velocityY);
-        if (Keyboard.current.sKey.isPressed) buttonS.Execute(controller, currentSpeed, velocityY);
-        if (Keyboard.current.aKey.isPressed) buttonA.Execute(controller, currentSpeed, velocityY);
-        if (Keyboard.current.dKey.isPressed) buttonD.Execute(controller, currentSpeed, velocityY);
-
-        if (!Keyboard.current.anyKey.isPressed)
+        if (Keyboard.current.wKey.isPressed) 
         {
-            controller.Move(Vector3.up * velocityY * Time.deltaTime);
+            finalMovement += buttonW.Execute(controller.transform, currentSpeed);
         }
+        if (Keyboard.current.sKey.isPressed) 
+        {
+            finalMovement += buttonS.Execute(controller.transform, currentSpeed);
+        }
+        if (Keyboard.current.aKey.isPressed) 
+        {
+            finalMovement += buttonA.Execute(controller.transform, currentSpeed);
+        }
+        if (Keyboard.current.dKey.isPressed) 
+        {
+            finalMovement += buttonD.Execute(controller.transform, currentSpeed);
+        }
+
+        finalMovement.y = velocityY;
+
+        controller.Move(finalMovement * Time.deltaTime);
     
     }
 
