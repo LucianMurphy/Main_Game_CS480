@@ -92,8 +92,16 @@ public class PacAI : MonoBehaviour
 
         if (!Physics.Raycast(rayStart, currentDir, 0.55f, wallLayer))
         {
-            Vector3 nextPos = transform.position + currentDir * speed * Time.deltaTime;
-            transform.position = GetTerrainPos(nextPos);
+            Vector3 targetFlatPos = transform.position + currentDir * speed * Time.deltaTime;
+            
+            Vector3 targetTerrainPos = GetTerrainPos(targetFlatPos);
+
+            Vector3 nextPos = new Vector3(targetFlatPos.x, targetTerrainPos.y, targetFlatPos.z);
+            
+            float verticalClimbSpeed = speed * 2.5f;
+            nextPos.y = Mathf.MoveTowards(transform.position.y, targetTerrainPos.y, verticalClimbSpeed * Time.deltaTime);
+
+            transform.position = nextPos;
             
         }
         else 
@@ -227,8 +235,8 @@ public class PacAI : MonoBehaviour
     // A* that looks for ghosts 
     float PacAStarToTarget(Vector3 startPos, Vector3 targetPos)
     {
-        Vector2Int start = new Vector2Int(Mathf.RoundToInt(startPos.x), Mathf.RoundToInt(startPos.z));
-        Vector2Int goal = new Vector2Int(Mathf.RoundToInt(targetPos.x), Mathf.RoundToInt(targetPos.z));
+        Vector3Int start = new Vector2Int(Mathf.RoundToInt(startPos.x), Mathf.RoundToInt(startPos.z), Mathf.RoundToInt(startPos.z));
+        Vector3Int goal = new Vector2Int(Mathf.RoundToInt(targetPos.x), Mathf.RoundToInt(targetPos.z), Mathf.RoundToInt(targetPos.z));
         
         var openSet = new PriorityQueue<Vector2Int, float>();
         var gScore = new Dictionary<Vector2Int, float>();
@@ -237,21 +245,23 @@ public class PacAI : MonoBehaviour
         gScore[start] = 0;
 
         int limit = 0;
-        while (openSet.Count > 0 && limit < 200) 
+        Vector3Int[] directions = { Vector3Int.forward, Vector3Int.back, Vector3Int.left, Vector3Int.right};
+        while (openSet.Count > 0 && limit < 300) 
         {
             limit++;
-            Vector2Int current = openSet.Dequeue();
+            Vector3Int current = openSet.Dequeue();
 
-            if (current == goal) return gScore[current];
+            if (Vector3Int.Distance(current, goal) < 1) return gScore[current];
 
-            foreach (Vector2Int d in new[] { Vector2Int.up, Vector2Int.down, Vector2Int.left, Vector2Int.right })
+            foreach (Vector3Int d in directions)
             {
-                Vector2Int neighbor = current + d;
+                Vector3Int flatNeighbor = current + d;
+
                 Vector3 flatWorld = new Vector3(neighbor.x, transform.position.y, neighbor.y);
 
-                
+                Vector3 rayStart = new Vector3(flatNeighbor.x, current.y + 1.5f, flatNeighbor.z);
 
-                if (!Physics.CheckSphere(flatWorld, 0.45f, wallLayer))
+                if (!Physics.Raycast(rayStart, Vector3.down, out RaycastHit groundhit, 3.0f, groundLayer))
                 {
                     float tentG = gScore[current] + 1;
                     if (!gScore.ContainsKey(neighbor) || tentG < gScore[neighbor])
