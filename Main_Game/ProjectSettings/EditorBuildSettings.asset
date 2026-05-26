@@ -14,6 +14,12 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/ItemShop.unity
     guid: 89c77b0cdf1d447dcb262849c7eef99f
+  - enabled: 1
+    path: Assets/Scenes/Mansion.unity
+    guid: 321cc5b5c2f86354ea2e6cca1f8a16e9
+  - enabled: 1
+    path: Assets/Scenes/SlenderLevel.unity
+    guid: f6f0e8eff65cf4c8299a00ca61e38dee
   m_configObjects:
     com.unity.dt.app-ui: {fileID: 11400000, guid: 1b1c20d82303e4b5781c3ef50ac1449f, type: 2}
     com.unity.input.settings.actions: {fileID: -944628639613478452, guid: 052faaac586de48259a63d0c4782560b, type: 3}

@@ -17,6 +17,13 @@ public class MainMenuController : MonoBehaviour
         SceneManager.LoadScene("PacMan");
     }
 
-    public void LoadVampireHunter() { }
-    public void LoadSlenderMan() { }
+    public void LoadVampireHunter()
+    {
+        SceneManager.LoadScene("Mansion");
+    }
+
+    public void LoadSlenderMan()
+    {
+        SceneManager.LoadScene("SlenderLevel");
+    }
 }
