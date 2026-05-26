@@ -14429,6 +14429,22 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 5695454112865698091, guid: 6ed56ed6234a9ee4b85ae7deedc910b4, type: 3}
+      propertyPath: m_Materials.Array.size
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 5695454112865698091, guid: 6ed56ed6234a9ee4b85ae7deedc910b4, type: 3}
+      propertyPath: 'm_Materials.Array.data[0]'
+      value: 
+      objectReference: {fileID: 2100000, guid: 8097792a5f1e5374ca68b5308828e8d2, type: 2}
+    - target: {fileID: 5695454112865698091, guid: 6ed56ed6234a9ee4b85ae7deedc910b4, type: 3}
+      propertyPath: 'm_Materials.Array.data[1]'
+      value: 
+      objectReference: {fileID: 2100000, guid: 8097792a5f1e5374ca68b5308828e8d2, type: 2}
+    - target: {fileID: 5778910178475312842, guid: 6ed56ed6234a9ee4b85ae7deedc910b4, type: 3}
+      propertyPath: m_LocalScale.x
+      value: 0.5
+      objectReference: {fileID: 0}
     - target: {fileID: 5778910178475312842, guid: 6ed56ed6234a9ee4b85ae7deedc910b4, type: 3}
       propertyPath: m_LocalPosition.x
       value: 25.109219
@@ -14469,11 +14485,16 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 7475528569712517897, guid: 6ed56ed6234a9ee4b85ae7deedc910b4, type: 3}
+      propertyPath: m_Mesh
+      value: 
+      objectReference: {fileID: 4300008, guid: 387f98e6cb1c9744e92f93a6cf9ce107, type: 3}
     - target: {fileID: 7876321719041048999, guid: 6ed56ed6234a9ee4b85ae7deedc910b4, type: 3}
       propertyPath: m_Name
-      value: PacMan
+      value: Hunter
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    m_RemovedComponents:
+    - {fileID: 1021610630816934548, guid: 6ed56ed6234a9ee4b85ae7deedc910b4, type: 3}
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
     m_AddedComponents: []
