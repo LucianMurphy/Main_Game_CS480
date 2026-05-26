@@ -235,11 +235,11 @@ public class PacAI : MonoBehaviour
     // A* that looks for ghosts 
     float PacAStarToTarget(Vector3 startPos, Vector3 targetPos)
     {
-        Vector3Int start = new Vector2Int(Mathf.RoundToInt(startPos.x), Mathf.RoundToInt(startPos.z), Mathf.RoundToInt(startPos.z));
-        Vector3Int goal = new Vector2Int(Mathf.RoundToInt(targetPos.x), Mathf.RoundToInt(targetPos.z), Mathf.RoundToInt(targetPos.z));
+        Vector3Int start = new Vector3Int(Mathf.RoundToInt(startPos.x), Mathf.RoundToInt(startPos.z), Mathf.RoundToInt(startPos.z));
+        Vector3Int goal = new Vector3Int(Mathf.RoundToInt(targetPos.x), Mathf.RoundToInt(targetPos.z), Mathf.RoundToInt(targetPos.z));
         
-        var openSet = new PriorityQueue<Vector2Int, float>();
-        var gScore = new Dictionary<Vector2Int, float>();
+        var openSet = new PriorityQueue<Vector3Int, float>();
+        var gScore = new Dictionary<Vector3Int, float>();
         
         openSet.Enqueue(start, 0);
         gScore[start] = 0;
@@ -257,19 +257,30 @@ public class PacAI : MonoBehaviour
             {
                 Vector3Int flatNeighbor = current + d;
 
-                Vector3 flatWorld = new Vector3(neighbor.x, transform.position.y, neighbor.y);
-
                 Vector3 rayStart = new Vector3(flatNeighbor.x, current.y + 1.5f, flatNeighbor.z);
 
-                if (!Physics.Raycast(rayStart, Vector3.down, out RaycastHit groundhit, 3.0f, groundLayer))
+                if (Physics.Raycast(rayStart, Vector3.down, out RaycastHit groundHit, 3.0f, groundLayer))
                 {
-                    float tentG = gScore[current] + 1;
-                    if (!gScore.ContainsKey(neighbor) || tentG < gScore[neighbor])
+                    Vector3Int neighbor = new Vector3Int(flatNeighbor.x,Mathf.RoundToInt(groundHit.point.y), flatNeighbor.z);
+                    float heightDiff = Mathf.Abs(neighbor.y - current.y);
+                    if (heightDiff <= 2.0f)
                     {
-                        gScore[neighbor] = tentG;
-                        // Manhattan heuristic for A*
-                        float h = Mathf.Abs(neighbor.x - goal.x) + Mathf.Abs(neighbor.y - goal.y);
-                        openSet.Enqueue(neighbor, tentG + h);
+                        Vector3 wallCheckPos = new Vector3(neighbor.x, groundHit.point.y + heightOffset, neighbor.z);
+                        if(!Physics.CheckSphere(wallCheckPos, 0.45f, wallLayer))
+                        {
+                            float tentG = gScore[current] + 1;
+                            if (!gScore.ContainsKey(neighbor) || tentG < gScore[neighbor])
+                            {
+                                gScore[neighbor] = tentG;
+                                
+                                // Upgraded to a 3D Manhattan Heuristic
+                                float h = Mathf.Abs(neighbor.x - goal.x) + 
+                                            Mathf.Abs(neighbor.y - goal.y) + 
+                                            Mathf.Abs(neighbor.z - goal.z);
+                                            
+                                openSet.Enqueue(neighbor, tentG + h);
+                            }
+                        }
                     }
                 }
             }
@@ -281,23 +292,23 @@ public class PacAI : MonoBehaviour
     private Collider[] detectionBuffer = new Collider[10];
     float PacAStarToTag(Vector3 startPos, string tag)
     {
-        Vector2Int start = new Vector2Int(Mathf.RoundToInt(startPos.x), Mathf.RoundToInt(startPos.z));
-        var openSet = new PriorityQueue<Vector2Int, float>();
-        var gScore = new Dictionary<Vector2Int, float>();
+        Vector3Int start = new Vector3Int(Mathf.RoundToInt(startPos.x), Mathf.RoundToInt(startPos.y), Mathf.RoundToInt(startPos.z));
+        var openSet = new PriorityQueue<Vector3Int, float>();
+        var gScore = new Dictionary<Vector3Int, float>();
+        
         openSet.Enqueue(start, 0);
         gScore[start] = 0;
 
         int limit = 0;
+        Vector3Int[] directions = { Vector3Int.forward, Vector3Int.back, Vector3Int.left, Vector3Int.right };
+
         while (openSet.Count > 0 && limit < 1000) 
         {
             limit++;
-            Vector2Int current = openSet.Dequeue();
+            Vector3Int current = openSet.Dequeue();
 
-            Vector3 flatCheckPos = new Vector3(current.x, transform.position.y, current.y);
-
-            // OPTIMIZATION: Non-allocating physics check
-            // This replaces .OverlapSphere().Any()
-            int numColliders = Physics.OverlapSphereNonAlloc(flatCheckPos, 0.45f, detectionBuffer);
+            Vector3 checkPos = new Vector3(current.x, current.y + heightOffset, current.z);
+            int numColliders = Physics.OverlapSphereNonAlloc(checkPos, 0.45f, detectionBuffer);
             
             for (int i = 0; i < numColliders; i++)
             {
@@ -307,32 +318,35 @@ public class PacAI : MonoBehaviour
                 }
             }
 
-            // Neighbors check
-            Vector2Int[] directions = { Vector2Int.up, Vector2Int.down, Vector2Int.left, Vector2Int.right };
-
-            //checking to see if this helps it might be added back later 
-            // if (Physics.OverlapSphere(checkPos, 0.45f).Any(h => h.CompareTag(tag)))
-            //     return gScore[current];
-
-            foreach (Vector2Int d in new[] { Vector2Int.up, Vector2Int.down, Vector2Int.left, Vector2Int.right })
+            foreach (Vector3Int d in directions)
             {
-                Vector2Int neighbor = current + d;
-                Vector3 flatWorld = new Vector3(neighbor.x, transform.position.y, neighbor.y);
-                
+                Vector3Int flatNeighbor = current + d;
+                Vector3 rayStart = new Vector3(flatNeighbor.x, current.y + 1.5f, flatNeighbor.z);
 
-                if (!Physics.CheckSphere(flatWorld, 0.45f, wallLayer))
+                if (Physics.Raycast(rayStart, Vector3.down, out RaycastHit groundHit, 3.0f, groundLayer))
                 {
-                    float tentG = gScore[current] + 1;
-                    if (!gScore.ContainsKey(neighbor) || tentG < gScore[neighbor])
+                    Vector3Int neighbor = new Vector3Int(flatNeighbor.x, Mathf.RoundToInt(groundHit.point.y), flatNeighbor.z);
+                    float heightDiff = Mathf.Abs(neighbor.y - current.y);
+                    
+                    if (heightDiff <= 2.0f)
                     {
-                        gScore[neighbor] = tentG;
-                        openSet.Enqueue(neighbor, tentG);
+                        Vector3 wallCheckPos = new Vector3(neighbor.x, groundHit.point.y + heightOffset, neighbor.z);
+                        if (!Physics.CheckSphere(wallCheckPos, 0.45f, wallLayer))
+                        {
+                            float tentG = gScore[current] + 1;
+                            if (!gScore.ContainsKey(neighbor) || tentG < gScore[neighbor])
+                            {
+                                gScore[neighbor] = tentG;
+                                openSet.Enqueue(neighbor, tentG);
+                            }
+                        }
                     }
                 }
             }
         }
         return 999f;
     }
+    
     //if eat pellet chase pacman
     private void OnTriggerEnter(Collider other)
     {
