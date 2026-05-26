@@ -75,11 +75,13 @@ public class PacAI : MonoBehaviour
 
     bool CanSeeGhost(GameObject Ghost)
     {
-        Vector3 directionToGhost = Ghost.transform.position - transform.position;
+        Vector3 startPos = transform.position + (Vector3.up * 0.5f);
+        Vector3 targetPos = Ghost.transform.position + (Vector3.up * 0.5f);
+
+        Vector3 directionToGhost = targetPos - startPos;
         float distanceToGhost = directionToGhost.magnitude;
         //checks to see if there is a wall in the way
-        if(Physics.Raycast(transform.position, directionToGhost, 
-                            out RaycastHit hit, distanceToGhost, wallLayer))
+        if(Physics.Raycast(startPos, directionToGhost.normalized, out RaycastHit hit, distanceToGhost, wallLayer))
         {
             return false;
         }
@@ -170,11 +172,12 @@ public class PacAI : MonoBehaviour
                 {
                     seeGhost = true;
                     lastSeenGhost = Time.time;
-                    if (pathDist < nearestGhostPathDist) 
-                    {
-                        nearestGhostPathDist = pathDist;
-                    }
-                } 
+                }
+                if (pathDist < nearestGhostPathDist) 
+                {
+                    nearestGhostPathDist = pathDist;
+                }
+                
             }
             else
             {
@@ -186,18 +189,16 @@ public class PacAI : MonoBehaviour
         }
         bool pacPanicing = (Time.time - lastSeenGhost) <= 4.0f;
         // run from ghost when its not scared 
-        if (!isGhostScared && pacPanicing)
+        if (!isGhostScared)
         {
-                if (seeGhost)
-                {
-                    score -= 10.0f / (nearestGhostPathDist + 1.0f);
-                }
-                if (nearestGhostPathDist < 4f)
-                {
-                    return float.NegativeInfinity;
-                }
-                score -= 10.0f / (nearestGhostPathDist + 1.0f);
-
+            if (nearestGhostPathDist <= 4f)
+            {
+                return float.NegativeInfinity;
+            }
+            if (pacPanicing || seeGhost)
+            {
+                score -= 100000.0f / (nearestGhostPathDist + 1.0f);
+            }
         }
         // if (!isGhostScared && nearestGhostPathDist < 4f) 
         // {
@@ -211,19 +212,33 @@ public class PacAI : MonoBehaviour
         // chase ghost when it is scared 
         if (isGhostScared && nearestScaredGhostPathDist < 999f)
         {
-            score += 500.0f / (nearestScaredGhostPathDist + 1.0f);
+            score += 50000.0f / (nearestScaredGhostPathDist + 1.0f);
         }
-
         // get pellet
-        if (pellets.Length > 0)
+        if (pellets.Length > 0 && !isGhostScared)
         {
-            float pelletDist = PacAStarToTag(pos, "Pellet");
-            score += 40.0f / (pelletDist + 1.0f); 
+            float bestPelletDist = 999f;
+            foreach (GameObject p in pellets)
+            {
+                float pelletDist = PacAStarToTarget(pos, p.transform.position);
+                if(pelletDist >= 999f)
+                {
+                    pelletDist = Vector3.Distance(pos, p.transform.position);
+                }
+                if (pelletDist < bestPelletDist)
+                {
+                    bestPelletDist = pelletDist;
+                }
+            }
+            if (bestPelletDist < 999f)
+            {
+                score += 100.0f / (bestPelletDist + 1.0f);
+            }
         }
         //broken code need to fix after playtest 
         // get food 
-        score -= 10f * pips.Length;
-        if (pips.Length > 0)
+        // score -= 10f * pips.Length;
+        if (pips.Length > 0 && !pacPanicing)
         {
             float foodDist = PacAStarToTag(pos, "Pip");
             score += 1.0f / (foodDist + 1.0f); 
@@ -235,8 +250,8 @@ public class PacAI : MonoBehaviour
     // A* that looks for ghosts 
     float PacAStarToTarget(Vector3 startPos, Vector3 targetPos)
     {
-        Vector3Int start = new Vector3Int(Mathf.RoundToInt(startPos.x), Mathf.RoundToInt(startPos.z), Mathf.RoundToInt(startPos.z));
-        Vector3Int goal = new Vector3Int(Mathf.RoundToInt(targetPos.x), Mathf.RoundToInt(targetPos.z), Mathf.RoundToInt(targetPos.z));
+        Vector3Int start = new Vector3Int(Mathf.RoundToInt(startPos.x), Mathf.RoundToInt(startPos.y), Mathf.RoundToInt(startPos.z));
+        Vector3Int goal = new Vector3Int(Mathf.RoundToInt(targetPos.x), Mathf.RoundToInt(targetPos.y), Mathf.RoundToInt(targetPos.z));
         
         var openSet = new PriorityQueue<Vector3Int, float>();
         var gScore = new Dictionary<Vector3Int, float>();
@@ -251,7 +266,7 @@ public class PacAI : MonoBehaviour
             limit++;
             Vector3Int current = openSet.Dequeue();
 
-            if (Vector3Int.Distance(current, goal) < 1) return gScore[current];
+            if (Vector3Int.Distance(current, goal) <= 1) return gScore[current];
 
             foreach (Vector3Int d in directions)
             {
@@ -273,7 +288,6 @@ public class PacAI : MonoBehaviour
                             {
                                 gScore[neighbor] = tentG;
                                 
-                                // Upgraded to a 3D Manhattan Heuristic
                                 float h = Mathf.Abs(neighbor.x - goal.x) + 
                                             Mathf.Abs(neighbor.y - goal.y) + 
                                             Mathf.Abs(neighbor.z - goal.z);
