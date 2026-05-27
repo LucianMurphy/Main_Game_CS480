@@ -77,7 +77,7 @@ public class ItemShopManager : MonoBehaviour
 
     public void OnReadyClicked()
     {
-        SceneManager.LoadScene("PacMan");
+        SceneManager.LoadScene(GameData.Instance.LastGameScene);
     }
 
     public void OnMainMenuClicked()

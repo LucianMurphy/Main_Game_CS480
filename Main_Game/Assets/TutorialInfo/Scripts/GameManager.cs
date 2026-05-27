@@ -20,6 +20,7 @@ public class GameManager : MonoBehaviour
         if (gameOver) return;
         gameOver = true;
         UnlockCursor();
+        GameData.Instance.LastGameScene = SceneManager.GetActiveScene().name;
         GameData.Instance.OnPlayerKilled();
         SceneManager.LoadScene("ItemShop");
     }
@@ -39,6 +40,7 @@ public class GameManager : MonoBehaviour
         if (gameOver) return;
         gameOver = true;
         UnlockCursor();
+        GameData.Instance.LastGameScene = SceneManager.GetActiveScene().name;
         GameData.Instance.OnPlayerEscaped();
         SceneManager.LoadScene("ItemShop");
     }
