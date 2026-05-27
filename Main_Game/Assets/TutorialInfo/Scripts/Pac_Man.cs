@@ -30,6 +30,10 @@ public class PacAI : MonoBehaviour
 
     private Rigidbody rb;
   
+   
+
+    
+        
 
 
     
@@ -52,7 +56,6 @@ public class PacAI : MonoBehaviour
             thinkTimer = 0f;
         }
         
-
 
         MoveContinuous();
     }
