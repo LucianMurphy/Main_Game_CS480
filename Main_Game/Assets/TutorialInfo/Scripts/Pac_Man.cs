@@ -22,7 +22,6 @@ public class PacAI : MonoBehaviour
     private bool isStunned = false;
 
     private float lastSeenGhost = 0f;
-    private float pelletWeight = 0f;
     private GameObject[] ghosts;
 
     [Header("Terrain Setup")]
@@ -30,6 +29,10 @@ public class PacAI : MonoBehaviour
     public float heightOffset = 0.5f;
 
     private Rigidbody rb;
+  
+
+
+    
     void Start()
     {
         rb = GetComponent<Rigidbody>();
@@ -42,32 +45,16 @@ public class PacAI : MonoBehaviour
         if (isStunned) return;
 
         thinkTimer += Time.deltaTime;
-        if (thinkTimer >= 0.1f)
+        if (thinkTimer >= 0.15f)
         {
             ghosts = GameObject.FindGameObjectsWithTag("Ghost");
             currentDir = GetBestMove();
             thinkTimer = 0f;
         }
+        
+
 
         MoveContinuous();
-    }
-
-    private int GetFloorIndex(float yPos)
-    {
-        int bestFloor = 0;
-        float minDist = float.MaxValue;
-        
-        // Find which floor height in the GridManager is closest to this Y position
-        for (int i = 0; i < GridManager.Instance.floorHeights.Length; i++)
-        {
-            float dist = Mathf.Abs(yPos - GridManager.Instance.floorHeights[i]);
-            if (dist < minDist)
-            {
-                minDist = dist;
-                bestFloor = i;
-            }
-        }
-        return bestFloor;
     }
 
     public void Stun(float duration)
@@ -77,13 +64,14 @@ public class PacAI : MonoBehaviour
 
     private Vector3 GetTerrainPos(Vector3 targetPos)
     {
-        Vector3 rayStart = new Vector3(targetPos.x, targetPos.y + 5f, targetPos.z);
+        Vector3 rayStart = new Vector3(targetPos.x, targetPos.y + 1f, targetPos.z);
         if (Physics.Raycast(rayStart, Vector3.down, out RaycastHit hit, 10f, groundLayer))
         {
             return new Vector3(targetPos.x, hit.point.y + heightOffset, targetPos.z);
         }
         return targetPos;
     }
+
     private System.Collections.IEnumerator StunRoutine(float duration)
     {
         isStunned = true;
@@ -95,15 +83,13 @@ public class PacAI : MonoBehaviour
     {
         Vector3 directionToGhost = Ghost.transform.position - transform.position;
         float distanceToGhost = directionToGhost.magnitude;
-        //checks to see if there is a wall in the way
-        if(Physics.Raycast(transform.position, directionToGhost, 
-                            out RaycastHit hit, distanceToGhost, wallLayer))
+        if(Physics.Raycast(transform.position, directionToGhost, out RaycastHit hit, distanceToGhost, wallLayer))
         {
             return false;
         }
         return true;
-
     }
+
     void MoveContinuous()
     {
         Vector3 rayStart = transform.position + (Vector3.up * 0.2f);
@@ -112,7 +98,6 @@ public class PacAI : MonoBehaviour
         {
             Vector3 nextPos = transform.position + currentDir * speed * Time.deltaTime;
             transform.position = GetTerrainPos(nextPos);
-            
         }
         else 
         {
@@ -134,7 +119,6 @@ public class PacAI : MonoBehaviour
 
         foreach (Vector3 dir in dirs)
         {
-            // hopefully wont run into walls with this code
             Vector3 castStart = transform.position + (Vector3.up * 0.2f);
             if (Physics.SphereCast(castStart, 0.3f, dir, out RaycastHit hit, 0.6f, wallLayer))
             {
@@ -143,10 +127,8 @@ public class PacAI : MonoBehaviour
 
             float score = BetterEvaluationScore(transform.position + dir);
 
-            // stops a bug where he just dances intead of moving 
             if (Vector3.Dot(dir, currentDir) < -0.9f) score -= 20f;
-            // changed this to .1 instead of 1 to help looping when not finding food 
-            if (dir == currentDir) score += 0.1f;
+            if (dir == currentDir) score += 0.1f; // Lowered momentum bias
 
             if (score > bestScore)
             {
@@ -171,7 +153,6 @@ public class PacAI : MonoBehaviour
         {
             if (g == null) continue;
             
-            // This prevents Pac-Man from staring at a ghost through a wall
             float pathDist = PacAStarToTarget(pos, g.transform.position);
 
             if (!isGhostScared)
@@ -194,83 +175,56 @@ public class PacAI : MonoBehaviour
                 }
             }
         }
+        
         bool pacPanicing = (Time.time - lastSeenGhost) <= 4.0f;
-        // run from ghost when its not scared 
+        
         if (!isGhostScared && pacPanicing)
         {
-                if (seeGhost)
-                {
-                    score -= 10.0f / (nearestGhostPathDist + 1.0f);
-                }
-                if (nearestGhostPathDist < 4f)
-                {
-                    score -= 10000.0f / (nearestGhostPathDist + 1.0f);
-                }
-                score -= 10.0f / (nearestGhostPathDist + 1.0f);
-
+            if (seeGhost)
+            {
+                score -= 50.0f / (nearestGhostPathDist + 1.0f);
+            }
+            if (nearestGhostPathDist <= 2f)
+            {
+                score -= 1000.0f / (nearestGhostPathDist + 0.1f);
+            }
         }
-        // if (!isGhostScared && nearestGhostPathDist < 4f) 
-        // {
-        //     return float.NegativeInfinity;
-        // }
-        // // This is commented out just in case 
-        // if (!isGhostScared) 
-        // {
-        //     score -= 10.0f / (nearestGhostPathDist + 1.0f);
-        // }
-        // chase ghost when it is scared 
+
         if (isGhostScared && nearestScaredGhostPathDist < 999f)
         {
             score += 500.0f / (nearestScaredGhostPathDist + 1.0f);
         }
 
-        // get pellet
+        // ORIGINAL FOOD LOGIC WITH FALLBACK
         if (pellets.Length > 0)
         {
             float pelletDist = PacAStarToTag(pos, "Pellet");
+            if (pelletDist >= 999f)
+            {
+                pelletDist = Vector3.Distance(pos, pellets[0].transform.position);
+            }
             score += 40.0f / (pelletDist + 1.0f); 
         }
-        //broken code need to fix after playtest 
-        // get food 
-        score -= 10f * pips.Length;
-        if (pips.Length > 0)
+
+        // score -= 10f * pips.Length;
+        if (pips.Length > 0 && !pacPanicing)
         {
             float foodDist = PacAStarToTag(pos, "Pip");
+            if (foodDist >= 999f)
+            {
+                foodDist = Vector3.Distance(pos, pips[0].transform.position);
+            }
             score += 1.0f / (foodDist + 1.0f); 
         }
 
         return score;
     }
 
-    // A* that looks for ghosts 
+    // ORIGINAL GHOST A* (Physics Based)
     float PacAStarToTarget(Vector3 startPos, Vector3 targetPos)
     {
-        int startFloor = GetFloorIndex(startPos.y);
-        int targetFloor = GetFloorIndex(targetPos.y);
-
-        Vector3 actualTargetPos = targetPos;
-
-        // FLOOR TRANSITION LOGIC
-        // If the target is on a different floor, route to the nearest stairs instead
-        if (startFloor != targetFloor && GridManager.Instance.floor1To2Stairs.Length > 0)
-        {
-            Transform nearestStair = null;
-            float minDist = float.MaxValue;
-
-            foreach (Transform stair in GridManager.Instance.floor1To2Stairs)
-            {
-                float d = Vector3.Distance(startPos, stair.position);
-                if (d < minDist)
-                {
-                    minDist = d;
-                    nearestStair = stair;
-                }
-            }
-            actualTargetPos = nearestStair.position;
-        }
-
         Vector2Int start = new Vector2Int(Mathf.RoundToInt(startPos.x), Mathf.RoundToInt(startPos.z));
-        Vector2Int goal = new Vector2Int(Mathf.RoundToInt(actualTargetPos.x), Mathf.RoundToInt(actualTargetPos.z));
+        Vector2Int goal = new Vector2Int(Mathf.RoundToInt(targetPos.x), Mathf.RoundToInt(targetPos.z));
         
         var openSet = new PriorityQueue<Vector2Int, float>();
         var gScore = new Dictionary<Vector2Int, float>();
@@ -279,7 +233,6 @@ public class PacAI : MonoBehaviour
         gScore[start] = 0;
 
         int limit = 0;
-        // You can safely increase this limit now because the check is instantaneous
         while (openSet.Count > 0 && limit < 1000) 
         {
             limit++;
@@ -290,9 +243,9 @@ public class PacAI : MonoBehaviour
             foreach (Vector2Int d in new[] { Vector2Int.up, Vector2Int.down, Vector2Int.left, Vector2Int.right })
             {
                 Vector2Int neighbor = current + d;
+                Vector3 flatWorld = new Vector3(neighbor.x, transform.position.y, neighbor.y);
 
-                // FAST ARRAY LOOKUP - No physics calculations happening here!
-                if (GridManager.Instance.IsWalkable(startFloor, neighbor.x, neighbor.y))
+                if (!Physics.CheckSphere(flatWorld, 0.45f, wallLayer))
                 {
                     float tentG = gScore[current] + 1;
                     if (!gScore.ContainsKey(neighbor) || tentG < gScore[neighbor])
@@ -307,7 +260,7 @@ public class PacAI : MonoBehaviour
         return 999f;
     }
 
-    // A* that looks fore pellets and pips 
+    // ORIGINAL FOOD A* (Physics Based)
     private Collider[] detectionBuffer = new Collider[10];
     float PacAStarToTag(Vector3 startPos, string tag)
     {
@@ -318,15 +271,13 @@ public class PacAI : MonoBehaviour
         gScore[start] = 0;
 
         int limit = 0;
-        while (openSet.Count > 0 && limit < 1000) 
+        while (openSet.Count > 0 && limit < 200) 
         {
             limit++;
             Vector2Int current = openSet.Dequeue();
 
             Vector3 flatCheckPos = new Vector3(current.x, transform.position.y, current.y);
 
-            // OPTIMIZATION: Non-allocating physics check
-            // This replaces .OverlapSphere().Any()
             int numColliders = Physics.OverlapSphereNonAlloc(flatCheckPos, 0.45f, detectionBuffer);
             
             for (int i = 0; i < numColliders; i++)
@@ -337,19 +288,11 @@ public class PacAI : MonoBehaviour
                 }
             }
 
-            // Neighbors check
-            Vector2Int[] directions = { Vector2Int.up, Vector2Int.down, Vector2Int.left, Vector2Int.right };
-
-            //checking to see if this helps it might be added back later 
-            // if (Physics.OverlapSphere(checkPos, 0.45f).Any(h => h.CompareTag(tag)))
-            //     return gScore[current];
-
             foreach (Vector2Int d in new[] { Vector2Int.up, Vector2Int.down, Vector2Int.left, Vector2Int.right })
             {
                 Vector2Int neighbor = current + d;
                 Vector3 flatWorld = new Vector3(neighbor.x, transform.position.y, neighbor.y);
                 
-
                 if (!Physics.CheckSphere(flatWorld, 0.45f, wallLayer))
                 {
                     float tentG = gScore[current] + 1;
@@ -363,7 +306,7 @@ public class PacAI : MonoBehaviour
         }
         return 999f;
     }
-    //if eat pellet chase pacman
+
     private void OnTriggerEnter(Collider other)
     {
         if (other.CompareTag("Pip")) 
@@ -383,11 +326,9 @@ public class PacAI : MonoBehaviour
                     wall.tag = "escape_walls";
                 }
             }
-
         }
         else if (other.CompareTag("Ghost"))
         {
-            // Check if the player has a shield or invincibility active.
             PlayerStatus ps = other.GetComponent<PlayerStatus>();
             if (ps != null && ps.TryAbsorbHit()) return;
 
@@ -401,9 +342,6 @@ public class PacAI : MonoBehaviour
         }
     }
 }
-
-
-
 
 public class PriorityQueue<TElement, TPriority> where TPriority : System.IComparable<TPriority>
 {

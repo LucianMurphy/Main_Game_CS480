@@ -4208,34 +4208,6 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
-    - target: {fileID: 7308235905136345730, guid: d33249e5ae722fb40ad2807c439696d9, type: 3}
-      propertyPath: m_DirtyAABB
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 7308235905136345730, guid: d33249e5ae722fb40ad2807c439696d9, type: 3}
-      propertyPath: m_AABB.m_Center.x
-      value: 0.0000073313713
-      objectReference: {fileID: 0}
-    - target: {fileID: 7308235905136345730, guid: d33249e5ae722fb40ad2807c439696d9, type: 3}
-      propertyPath: m_AABB.m_Center.y
-      value: 0.49241188
-      objectReference: {fileID: 0}
-    - target: {fileID: 7308235905136345730, guid: d33249e5ae722fb40ad2807c439696d9, type: 3}
-      propertyPath: m_AABB.m_Center.z
-      value: 0.027616918
-      objectReference: {fileID: 0}
-    - target: {fileID: 7308235905136345730, guid: d33249e5ae722fb40ad2807c439696d9, type: 3}
-      propertyPath: m_AABB.m_Extent.x
-      value: 0.47727937
-      objectReference: {fileID: 0}
-    - target: {fileID: 7308235905136345730, guid: d33249e5ae722fb40ad2807c439696d9, type: 3}
-      propertyPath: m_AABB.m_Extent.y
-      value: 0.46758816
-      objectReference: {fileID: 0}
-    - target: {fileID: 7308235905136345730, guid: d33249e5ae722fb40ad2807c439696d9, type: 3}
-      propertyPath: m_AABB.m_Extent.z
-      value: 0.495205
-      objectReference: {fileID: 0}
     - target: {fileID: 1021610630816934548, guid: 6ed56ed6234a9ee4b85ae7deedc910b4, type: 3}
       propertyPath: m_Enabled
       value: 0
@@ -4259,6 +4231,10 @@ PrefabInstance:
     - target: {fileID: 3056500377609458562, guid: 6ed56ed6234a9ee4b85ae7deedc910b4, type: 3}
       propertyPath: escape_walls
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3056500377609458562, guid: 6ed56ed6234a9ee4b85ae7deedc910b4, type: 3}
+      propertyPath: groundLayer.m_Bits
+      value: 128
       objectReference: {fileID: 0}
     - target: {fileID: 3056500377609458562, guid: 6ed56ed6234a9ee4b85ae7deedc910b4, type: 3}
       propertyPath: specificEscapeWalls.Array.size
@@ -4332,14 +4308,50 @@ PrefabInstance:
       propertyPath: m_Mesh
       value: 
       objectReference: {fileID: -9220409389247683622, guid: 97b0cd269422460b9c5672eb06af8f7c, type: 3}
+    - target: {fileID: 7710800410328520092, guid: 6ed56ed6234a9ee4b85ae7deedc910b4, type: 3}
+      propertyPath: m_Radius
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 7876321719041048999, guid: 6ed56ed6234a9ee4b85ae7deedc910b4, type: 3}
       propertyPath: m_Name
       value: Slender
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    - target: {fileID: 7308235905136345730, guid: d33249e5ae722fb40ad2807c439696d9, type: 3}
+      propertyPath: m_DirtyAABB
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7308235905136345730, guid: d33249e5ae722fb40ad2807c439696d9, type: 3}
+      propertyPath: m_AABB.m_Center.x
+      value: 0.0000073313713
+      objectReference: {fileID: 0}
+    - target: {fileID: 7308235905136345730, guid: d33249e5ae722fb40ad2807c439696d9, type: 3}
+      propertyPath: m_AABB.m_Center.y
+      value: 0.49241188
+      objectReference: {fileID: 0}
+    - target: {fileID: 7308235905136345730, guid: d33249e5ae722fb40ad2807c439696d9, type: 3}
+      propertyPath: m_AABB.m_Center.z
+      value: 0.027616918
+      objectReference: {fileID: 0}
+    - target: {fileID: 7308235905136345730, guid: d33249e5ae722fb40ad2807c439696d9, type: 3}
+      propertyPath: m_AABB.m_Extent.x
+      value: 0.47727937
+      objectReference: {fileID: 0}
+    - target: {fileID: 7308235905136345730, guid: d33249e5ae722fb40ad2807c439696d9, type: 3}
+      propertyPath: m_AABB.m_Extent.y
+      value: 0.46758816
+      objectReference: {fileID: 0}
+    - target: {fileID: 7308235905136345730, guid: d33249e5ae722fb40ad2807c439696d9, type: 3}
+      propertyPath: m_AABB.m_Extent.z
+      value: 0.495205
+      objectReference: {fileID: 0}
+    m_RemovedComponents:
+    - {fileID: 7710800410328520092, guid: 6ed56ed6234a9ee4b85ae7deedc910b4, type: 3}
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 7876321719041048999, guid: 6ed56ed6234a9ee4b85ae7deedc910b4, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1307465438}
   m_SourcePrefab: {fileID: 100100000, guid: 6ed56ed6234a9ee4b85ae7deedc910b4, type: 3}
 --- !u!1001 &185003152
 PrefabInstance:
@@ -23173,7 +23185,7 @@ GameObject:
   - component: {fileID: 1212156803}
   - component: {fileID: 1212156802}
   - component: {fileID: 1212156801}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Terrain
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -24464,6 +24476,34 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 418198, guid: 393b236c42954a640b513d46de90ac38, type: 3}
   m_PrefabInstance: {fileID: 1307304765}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &1307465426 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 7876321719041048999, guid: 6ed56ed6234a9ee4b85ae7deedc910b4, type: 3}
+  m_PrefabInstance: {fileID: 181447282}
+  m_PrefabAsset: {fileID: 0}
+--- !u!136 &1307465438
+CapsuleCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1307465426}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 1
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Radius: 0.86976165
+  m_Height: 2.7875843
+  m_Direction: 1
+  m_Center: {x: 0, y: 1, z: 0}
 --- !u!1 &1315249115
 GameObject:
   m_ObjectHideFlags: 0
