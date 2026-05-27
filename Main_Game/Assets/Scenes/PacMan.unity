@@ -3336,6 +3336,14 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 3056500377609458562, guid: 6ed56ed6234a9ee4b85ae7deedc910b4, type: 3}
+      propertyPath: 'specificEscapeWalls.Array.data[0]'
+      value: 
+      objectReference: {fileID: 1501814451}
+    - target: {fileID: 3056500377609458562, guid: 6ed56ed6234a9ee4b85ae7deedc910b4, type: 3}
+      propertyPath: 'specificEscapeWalls.Array.data[1]'
+      value: 
+      objectReference: {fileID: 1809502019}
     - target: {fileID: 5695454112865698091, guid: 6ed56ed6234a9ee4b85ae7deedc910b4, type: 3}
       propertyPath: m_StaticShadowCaster
       value: 0
@@ -3396,14 +3404,22 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 7710800410328520092, guid: 6ed56ed6234a9ee4b85ae7deedc910b4, type: 3}
+      propertyPath: m_Radius
+      value: 2
+      objectReference: {fileID: 0}
     - target: {fileID: 7876321719041048999, guid: 6ed56ed6234a9ee4b85ae7deedc910b4, type: 3}
       propertyPath: m_Name
       value: PacMan
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    m_RemovedComponents:
+    - {fileID: -1833045716774985406, guid: 6ed56ed6234a9ee4b85ae7deedc910b4, type: 3}
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 7876321719041048999, guid: 6ed56ed6234a9ee4b85ae7deedc910b4, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1237670863}
   m_SourcePrefab: {fileID: 100100000, guid: 6ed56ed6234a9ee4b85ae7deedc910b4, type: 3}
 --- !u!1 &1200463784
 GameObject:
@@ -3538,6 +3554,33 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1200463784}
   m_CullTransparentMesh: 1
+--- !u!1 &1237670862 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 7876321719041048999, guid: 6ed56ed6234a9ee4b85ae7deedc910b4, type: 3}
+  m_PrefabInstance: {fileID: 1190278718}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &1237670863
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1237670862}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2d209d5247711054f99231b45e778a98, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::GridManager
+  gridMin: {x: -50, y: -50}
+  gridMax: {x: 50, y: 50}
+  wallLayer:
+    serializedVersion: 2
+    m_Bits: 0
+  floorHeights:
+  - 0
+  - 5
+  - 10
+  floor1To2Stairs: []
 --- !u!1 &1268316765
 GameObject:
   m_ObjectHideFlags: 0
@@ -4076,6 +4119,11 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1490110762}
   m_CullTransparentMesh: 1
+--- !u!1 &1501814451 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 2869762338984183222, guid: 968c1f0d2d753d54ca12533606e36344, type: 3}
+  m_PrefabInstance: {fileID: 1076816444}
+  m_PrefabAsset: {fileID: 0}
 --- !u!4 &1507282868 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 8390892083965804652, guid: 968c1f0d2d753d54ca12533606e36344, type: 3}
@@ -4880,6 +4928,11 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1759284109}
   m_CullTransparentMesh: 1
+--- !u!1 &1809502019 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 3916591376802742868, guid: 968c1f0d2d753d54ca12533606e36344, type: 3}
+  m_PrefabInstance: {fileID: 1076816444}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &1813476527
 GameObject:
   m_ObjectHideFlags: 0

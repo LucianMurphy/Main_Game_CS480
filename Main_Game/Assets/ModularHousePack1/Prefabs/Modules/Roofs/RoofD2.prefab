@@ -24,6 +24,7 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1872611993793586625}
+  serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
@@ -33,7 +34,6 @@ Transform:
   - {fileID: 6749010178655613007}
   - {fileID: 8457060666617083098}
   m_Father: {fileID: 0}
-  m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!64 &7433435199993422119
 MeshCollider:
@@ -43,9 +43,17 @@ MeshCollider:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1872611993793586625}
   m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
   m_IsTrigger: 0
+  m_ProvidesContacts: 0
   m_Enabled: 1
-  serializedVersion: 4
+  serializedVersion: 5
   m_Convex: 0
   m_CookingOptions: 30
   m_Mesh: {fileID: -6163168388956141739, guid: 793c4f24c5832e446ad3d20299918e23, type: 3}
@@ -54,6 +62,7 @@ PrefabInstance:
   m_ObjectHideFlags: 0
   serializedVersion: 2
   m_Modification:
+    serializedVersion: 3
     m_TransformParent: {fileID: 5986665647705052652}
     m_Modifications:
     - target: {fileID: 3541604956954751972, guid: 0309f2f28bc78a24ab308200ded523c3, type: 3}
@@ -105,6 +114,9 @@ PrefabInstance:
       value: RoofD2_Ceiling
       objectReference: {fileID: 0}
     m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 0309f2f28bc78a24ab308200ded523c3, type: 3}
 --- !u!4 &1731029115876286741 stripped
 Transform:
@@ -116,6 +128,7 @@ PrefabInstance:
   m_ObjectHideFlags: 0
   serializedVersion: 2
   m_Modification:
+    serializedVersion: 3
     m_TransformParent: {fileID: 5986665647705052652}
     m_Modifications:
     - target: {fileID: 2830288746186236530, guid: 25e58463d751e1a42935f495db3804c4, type: 3}
@@ -167,6 +180,9 @@ PrefabInstance:
       value: RoofD2_Tiles
       objectReference: {fileID: 0}
     m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 25e58463d751e1a42935f495db3804c4, type: 3}
 --- !u!4 &8457060666617083098 stripped
 Transform:
@@ -178,6 +194,7 @@ PrefabInstance:
   m_ObjectHideFlags: 0
   serializedVersion: 2
   m_Modification:
+    serializedVersion: 3
     m_TransformParent: {fileID: 5986665647705052652}
     m_Modifications:
     - target: {fileID: 2871186904583644848, guid: 391639c381eb136479f783cd266dec37, type: 3}
@@ -229,6 +246,9 @@ PrefabInstance:
       value: RoofD2_Clouses
       objectReference: {fileID: 0}
     m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 391639c381eb136479f783cd266dec37, type: 3}
 --- !u!4 &6749010178655613007 stripped
 Transform:

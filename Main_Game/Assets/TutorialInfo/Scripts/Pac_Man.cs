@@ -52,6 +52,24 @@ public class PacAI : MonoBehaviour
         MoveContinuous();
     }
 
+    private int GetFloorIndex(float yPos)
+    {
+        int bestFloor = 0;
+        float minDist = float.MaxValue;
+        
+        // Find which floor height in the GridManager is closest to this Y position
+        for (int i = 0; i < GridManager.Instance.floorHeights.Length; i++)
+        {
+            float dist = Mathf.Abs(yPos - GridManager.Instance.floorHeights[i]);
+            if (dist < minDist)
+            {
+                minDist = dist;
+                bestFloor = i;
+            }
+        }
+        return bestFloor;
+    }
+
     public void Stun(float duration)
     {
         StartCoroutine(StunRoutine(duration));
@@ -75,13 +93,11 @@ public class PacAI : MonoBehaviour
 
     bool CanSeeGhost(GameObject Ghost)
     {
-        Vector3 startPos = transform.position + (Vector3.up * 0.5f);
-        Vector3 targetPos = Ghost.transform.position + (Vector3.up * 0.5f);
-
-        Vector3 directionToGhost = targetPos - startPos;
+        Vector3 directionToGhost = Ghost.transform.position - transform.position;
         float distanceToGhost = directionToGhost.magnitude;
         //checks to see if there is a wall in the way
-        if(Physics.Raycast(startPos, directionToGhost.normalized, out RaycastHit hit, distanceToGhost, wallLayer))
+        if(Physics.Raycast(transform.position, directionToGhost, 
+                            out RaycastHit hit, distanceToGhost, wallLayer))
         {
             return false;
         }
@@ -94,16 +110,8 @@ public class PacAI : MonoBehaviour
 
         if (!Physics.Raycast(rayStart, currentDir, 0.55f, wallLayer))
         {
-            Vector3 targetFlatPos = transform.position + currentDir * speed * Time.deltaTime;
-            
-            Vector3 targetTerrainPos = GetTerrainPos(targetFlatPos);
-
-            Vector3 nextPos = new Vector3(targetFlatPos.x, targetTerrainPos.y, targetFlatPos.z);
-            
-            float verticalClimbSpeed = speed * 2.5f;
-            nextPos.y = Mathf.MoveTowards(transform.position.y, targetTerrainPos.y, verticalClimbSpeed * Time.deltaTime);
-
-            transform.position = nextPos;
+            Vector3 nextPos = transform.position + currentDir * speed * Time.deltaTime;
+            transform.position = GetTerrainPos(nextPos);
             
         }
         else 
@@ -172,12 +180,11 @@ public class PacAI : MonoBehaviour
                 {
                     seeGhost = true;
                     lastSeenGhost = Time.time;
-                }
-                if (pathDist < nearestGhostPathDist) 
-                {
-                    nearestGhostPathDist = pathDist;
-                }
-                
+                    if (pathDist < nearestGhostPathDist) 
+                    {
+                        nearestGhostPathDist = pathDist;
+                    }
+                } 
             }
             else
             {
@@ -189,16 +196,18 @@ public class PacAI : MonoBehaviour
         }
         bool pacPanicing = (Time.time - lastSeenGhost) <= 4.0f;
         // run from ghost when its not scared 
-        if (!isGhostScared)
+        if (!isGhostScared && pacPanicing)
         {
-            if (nearestGhostPathDist <= 4f)
-            {
-                return float.NegativeInfinity;
-            }
-            if (pacPanicing || seeGhost)
-            {
-                score -= 100000.0f / (nearestGhostPathDist + 1.0f);
-            }
+                if (seeGhost)
+                {
+                    score -= 10.0f / (nearestGhostPathDist + 1.0f);
+                }
+                if (nearestGhostPathDist < 4f)
+                {
+                    score -= 10000.0f / (nearestGhostPathDist + 1.0f);
+                }
+                score -= 10.0f / (nearestGhostPathDist + 1.0f);
+
         }
         // if (!isGhostScared && nearestGhostPathDist < 4f) 
         // {
@@ -212,33 +221,19 @@ public class PacAI : MonoBehaviour
         // chase ghost when it is scared 
         if (isGhostScared && nearestScaredGhostPathDist < 999f)
         {
-            score += 50000.0f / (nearestScaredGhostPathDist + 1.0f);
+            score += 500.0f / (nearestScaredGhostPathDist + 1.0f);
         }
+
         // get pellet
-        if (pellets.Length > 0 && !isGhostScared)
+        if (pellets.Length > 0)
         {
-            float bestPelletDist = 999f;
-            foreach (GameObject p in pellets)
-            {
-                float pelletDist = PacAStarToTarget(pos, p.transform.position);
-                if(pelletDist >= 999f)
-                {
-                    pelletDist = Vector3.Distance(pos, p.transform.position);
-                }
-                if (pelletDist < bestPelletDist)
-                {
-                    bestPelletDist = pelletDist;
-                }
-            }
-            if (bestPelletDist < 999f)
-            {
-                score += 100.0f / (bestPelletDist + 1.0f);
-            }
+            float pelletDist = PacAStarToTag(pos, "Pellet");
+            score += 40.0f / (pelletDist + 1.0f); 
         }
         //broken code need to fix after playtest 
         // get food 
-        // score -= 10f * pips.Length;
-        if (pips.Length > 0 && !pacPanicing)
+        score -= 10f * pips.Length;
+        if (pips.Length > 0)
         {
             float foodDist = PacAStarToTag(pos, "Pip");
             score += 1.0f / (foodDist + 1.0f); 
@@ -250,51 +245,61 @@ public class PacAI : MonoBehaviour
     // A* that looks for ghosts 
     float PacAStarToTarget(Vector3 startPos, Vector3 targetPos)
     {
-        Vector3Int start = new Vector3Int(Mathf.RoundToInt(startPos.x), Mathf.RoundToInt(startPos.y), Mathf.RoundToInt(startPos.z));
-        Vector3Int goal = new Vector3Int(Mathf.RoundToInt(targetPos.x), Mathf.RoundToInt(targetPos.y), Mathf.RoundToInt(targetPos.z));
+        int startFloor = GetFloorIndex(startPos.y);
+        int targetFloor = GetFloorIndex(targetPos.y);
+
+        Vector3 actualTargetPos = targetPos;
+
+        // FLOOR TRANSITION LOGIC
+        // If the target is on a different floor, route to the nearest stairs instead
+        if (startFloor != targetFloor && GridManager.Instance.floor1To2Stairs.Length > 0)
+        {
+            Transform nearestStair = null;
+            float minDist = float.MaxValue;
+
+            foreach (Transform stair in GridManager.Instance.floor1To2Stairs)
+            {
+                float d = Vector3.Distance(startPos, stair.position);
+                if (d < minDist)
+                {
+                    minDist = d;
+                    nearestStair = stair;
+                }
+            }
+            actualTargetPos = nearestStair.position;
+        }
+
+        Vector2Int start = new Vector2Int(Mathf.RoundToInt(startPos.x), Mathf.RoundToInt(startPos.z));
+        Vector2Int goal = new Vector2Int(Mathf.RoundToInt(actualTargetPos.x), Mathf.RoundToInt(actualTargetPos.z));
         
-        var openSet = new PriorityQueue<Vector3Int, float>();
-        var gScore = new Dictionary<Vector3Int, float>();
+        var openSet = new PriorityQueue<Vector2Int, float>();
+        var gScore = new Dictionary<Vector2Int, float>();
         
         openSet.Enqueue(start, 0);
         gScore[start] = 0;
 
         int limit = 0;
-        Vector3Int[] directions = { Vector3Int.forward, Vector3Int.back, Vector3Int.left, Vector3Int.right};
-        while (openSet.Count > 0 && limit < 300) 
+        // You can safely increase this limit now because the check is instantaneous
+        while (openSet.Count > 0 && limit < 1000) 
         {
             limit++;
-            Vector3Int current = openSet.Dequeue();
+            Vector2Int current = openSet.Dequeue();
 
-            if (Vector3Int.Distance(current, goal) <= 1) return gScore[current];
+            if (current == goal) return gScore[current];
 
-            foreach (Vector3Int d in directions)
+            foreach (Vector2Int d in new[] { Vector2Int.up, Vector2Int.down, Vector2Int.left, Vector2Int.right })
             {
-                Vector3Int flatNeighbor = current + d;
+                Vector2Int neighbor = current + d;
 
-                Vector3 rayStart = new Vector3(flatNeighbor.x, current.y + 1.5f, flatNeighbor.z);
-
-                if (Physics.Raycast(rayStart, Vector3.down, out RaycastHit groundHit, 3.0f, groundLayer))
+                // FAST ARRAY LOOKUP - No physics calculations happening here!
+                if (GridManager.Instance.IsWalkable(startFloor, neighbor.x, neighbor.y))
                 {
-                    Vector3Int neighbor = new Vector3Int(flatNeighbor.x,Mathf.RoundToInt(groundHit.point.y), flatNeighbor.z);
-                    float heightDiff = Mathf.Abs(neighbor.y - current.y);
-                    if (heightDiff <= 2.0f)
+                    float tentG = gScore[current] + 1;
+                    if (!gScore.ContainsKey(neighbor) || tentG < gScore[neighbor])
                     {
-                        Vector3 wallCheckPos = new Vector3(neighbor.x, groundHit.point.y + heightOffset, neighbor.z);
-                        if(!Physics.CheckSphere(wallCheckPos, 0.45f, wallLayer))
-                        {
-                            float tentG = gScore[current] + 1;
-                            if (!gScore.ContainsKey(neighbor) || tentG < gScore[neighbor])
-                            {
-                                gScore[neighbor] = tentG;
-                                
-                                float h = Mathf.Abs(neighbor.x - goal.x) + 
-                                            Mathf.Abs(neighbor.y - goal.y) + 
-                                            Mathf.Abs(neighbor.z - goal.z);
-                                            
-                                openSet.Enqueue(neighbor, tentG + h);
-                            }
-                        }
+                        gScore[neighbor] = tentG;
+                        float h = Mathf.Abs(neighbor.x - goal.x) + Mathf.Abs(neighbor.y - goal.y);
+                        openSet.Enqueue(neighbor, tentG + h);
                     }
                 }
             }
@@ -306,23 +311,23 @@ public class PacAI : MonoBehaviour
     private Collider[] detectionBuffer = new Collider[10];
     float PacAStarToTag(Vector3 startPos, string tag)
     {
-        Vector3Int start = new Vector3Int(Mathf.RoundToInt(startPos.x), Mathf.RoundToInt(startPos.y), Mathf.RoundToInt(startPos.z));
-        var openSet = new PriorityQueue<Vector3Int, float>();
-        var gScore = new Dictionary<Vector3Int, float>();
-        
+        Vector2Int start = new Vector2Int(Mathf.RoundToInt(startPos.x), Mathf.RoundToInt(startPos.z));
+        var openSet = new PriorityQueue<Vector2Int, float>();
+        var gScore = new Dictionary<Vector2Int, float>();
         openSet.Enqueue(start, 0);
         gScore[start] = 0;
 
         int limit = 0;
-        Vector3Int[] directions = { Vector3Int.forward, Vector3Int.back, Vector3Int.left, Vector3Int.right };
-
         while (openSet.Count > 0 && limit < 1000) 
         {
             limit++;
-            Vector3Int current = openSet.Dequeue();
+            Vector2Int current = openSet.Dequeue();
 
-            Vector3 checkPos = new Vector3(current.x, current.y + heightOffset, current.z);
-            int numColliders = Physics.OverlapSphereNonAlloc(checkPos, 0.45f, detectionBuffer);
+            Vector3 flatCheckPos = new Vector3(current.x, transform.position.y, current.y);
+
+            // OPTIMIZATION: Non-allocating physics check
+            // This replaces .OverlapSphere().Any()
+            int numColliders = Physics.OverlapSphereNonAlloc(flatCheckPos, 0.45f, detectionBuffer);
             
             for (int i = 0; i < numColliders; i++)
             {
@@ -332,35 +337,32 @@ public class PacAI : MonoBehaviour
                 }
             }
 
-            foreach (Vector3Int d in directions)
-            {
-                Vector3Int flatNeighbor = current + d;
-                Vector3 rayStart = new Vector3(flatNeighbor.x, current.y + 1.5f, flatNeighbor.z);
+            // Neighbors check
+            Vector2Int[] directions = { Vector2Int.up, Vector2Int.down, Vector2Int.left, Vector2Int.right };
 
-                if (Physics.Raycast(rayStart, Vector3.down, out RaycastHit groundHit, 3.0f, groundLayer))
+            //checking to see if this helps it might be added back later 
+            // if (Physics.OverlapSphere(checkPos, 0.45f).Any(h => h.CompareTag(tag)))
+            //     return gScore[current];
+
+            foreach (Vector2Int d in new[] { Vector2Int.up, Vector2Int.down, Vector2Int.left, Vector2Int.right })
+            {
+                Vector2Int neighbor = current + d;
+                Vector3 flatWorld = new Vector3(neighbor.x, transform.position.y, neighbor.y);
+                
+
+                if (!Physics.CheckSphere(flatWorld, 0.45f, wallLayer))
                 {
-                    Vector3Int neighbor = new Vector3Int(flatNeighbor.x, Mathf.RoundToInt(groundHit.point.y), flatNeighbor.z);
-                    float heightDiff = Mathf.Abs(neighbor.y - current.y);
-                    
-                    if (heightDiff <= 2.0f)
+                    float tentG = gScore[current] + 1;
+                    if (!gScore.ContainsKey(neighbor) || tentG < gScore[neighbor])
                     {
-                        Vector3 wallCheckPos = new Vector3(neighbor.x, groundHit.point.y + heightOffset, neighbor.z);
-                        if (!Physics.CheckSphere(wallCheckPos, 0.45f, wallLayer))
-                        {
-                            float tentG = gScore[current] + 1;
-                            if (!gScore.ContainsKey(neighbor) || tentG < gScore[neighbor])
-                            {
-                                gScore[neighbor] = tentG;
-                                openSet.Enqueue(neighbor, tentG);
-                            }
-                        }
+                        gScore[neighbor] = tentG;
+                        openSet.Enqueue(neighbor, tentG);
                     }
                 }
             }
         }
         return 999f;
     }
-    
     //if eat pellet chase pacman
     private void OnTriggerEnter(Collider other)
     {

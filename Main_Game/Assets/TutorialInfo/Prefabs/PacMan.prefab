@@ -18,6 +18,7 @@ GameObject:
   - component: {fileID: 1963565289245279033}
   - component: {fileID: 1021610630816934548}
   - component: {fileID: -1230924287514377850}
+  - component: {fileID: -1833045716774985406}
   m_Layer: 0
   m_Name: PacMan
   m_TagString: PacMan
@@ -324,3 +325,25 @@ Animation:
   m_AnimatePhysics: 0
   m_UpdateMode: 0
   m_CullingType: 0
+--- !u!114 &-1833045716774985406
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7876321719041048999}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2d209d5247711054f99231b45e778a98, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::GridManager
+  gridMin: {x: -50, y: -50}
+  gridMax: {x: 50, y: 50}
+  wallLayer:
+    serializedVersion: 2
+    m_Bits: 0
+  floorHeights:
+  - 0
+  - 5
+  - 10
+  floor1To2Stairs: []

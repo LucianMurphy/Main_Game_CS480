@@ -23,6 +23,7 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 8223945422232312219}
+  serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
@@ -31,13 +32,13 @@ Transform:
   - {fileID: 2545662233090058815}
   - {fileID: 5085631606769923069}
   m_Father: {fileID: 0}
-  m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &414093680839263504
 PrefabInstance:
   m_ObjectHideFlags: 0
   serializedVersion: 2
   m_Modification:
+    serializedVersion: 3
     m_TransformParent: {fileID: 120082525089642958}
     m_Modifications:
     - target: {fileID: 2804381726780780335, guid: 695433b661307344c8393c54804b262b, type: 3}
@@ -89,6 +90,9 @@ PrefabInstance:
       value: RoofClosed_Concrete
       objectReference: {fileID: 0}
     m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 695433b661307344c8393c54804b262b, type: 3}
 --- !u!4 &2545662233090058815 stripped
 Transform:
@@ -100,6 +104,7 @@ PrefabInstance:
   m_ObjectHideFlags: 0
   serializedVersion: 2
   m_Modification:
+    serializedVersion: 3
     m_TransformParent: {fileID: 120082525089642958}
     m_Modifications:
     - target: {fileID: 1970708864674801625, guid: eabfbd7f7e964744185267c5e2fb3d84, type: 3}
@@ -151,6 +156,9 @@ PrefabInstance:
       value: RoofClosed_Tiles
       objectReference: {fileID: 0}
     m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: eabfbd7f7e964744185267c5e2fb3d84, type: 3}
 --- !u!4 &5085631606769923069 stripped
 Transform:
