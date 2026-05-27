@@ -4256,6 +4256,18 @@ PrefabInstance:
       propertyPath: statusText
       value: 
       objectReference: {fileID: 750429279}
+    - target: {fileID: 3056500377609458562, guid: 6ed56ed6234a9ee4b85ae7deedc910b4, type: 3}
+      propertyPath: escape_walls
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3056500377609458562, guid: 6ed56ed6234a9ee4b85ae7deedc910b4, type: 3}
+      propertyPath: specificEscapeWalls.Array.size
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 3056500377609458562, guid: 6ed56ed6234a9ee4b85ae7deedc910b4, type: 3}
+      propertyPath: 'specificEscapeWalls.Array.data[0]'
+      value: 
+      objectReference: {fileID: 326068281}
     - target: {fileID: 5695454112865698091, guid: 6ed56ed6234a9ee4b85ae7deedc910b4, type: 3}
       propertyPath: m_Materials.Array.size
       value: 3
@@ -4310,6 +4322,10 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5778910178475312842, guid: 6ed56ed6234a9ee4b85ae7deedc910b4, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6670685763906740342, guid: 6ed56ed6234a9ee4b85ae7deedc910b4, type: 3}
+      propertyPath: m_UseGravity
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 7475528569712517897, guid: 6ed56ed6234a9ee4b85ae7deedc910b4, type: 3}
@@ -6765,11 +6781,15 @@ PrefabInstance:
   serializedVersion: 2
   m_Modification:
     serializedVersion: 3
-    m_TransformParent: {fileID: 0}
+    m_TransformParent: {fileID: 1112090234}
     m_Modifications:
     - target: {fileID: 158646178524826604, guid: 39120fa8a4eed7548b1028b36cda3383, type: 3}
+      propertyPath: m_LocalScale.z
+      value: 0.20000003
+      objectReference: {fileID: 0}
+    - target: {fileID: 158646178524826604, guid: 39120fa8a4eed7548b1028b36cda3383, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 15.06
+      value: 15.22192
       objectReference: {fileID: 0}
     - target: {fileID: 158646178524826604, guid: 39120fa8a4eed7548b1028b36cda3383, type: 3}
       propertyPath: m_LocalPosition.y
@@ -6777,7 +6797,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 158646178524826604, guid: 39120fa8a4eed7548b1028b36cda3383, type: 3}
       propertyPath: m_LocalPosition.z
-      value: 1.4447303
+      value: 3.0658803
       objectReference: {fileID: 0}
     - target: {fileID: 158646178524826604, guid: 39120fa8a4eed7548b1028b36cda3383, type: 3}
       propertyPath: m_LocalRotation.w
@@ -7127,6 +7147,16 @@ PrefabInstance:
 Transform:
   m_CorrespondingSourceObject: {fileID: 418198, guid: 393b236c42954a640b513d46de90ac38, type: 3}
   m_PrefabInstance: {fileID: 324292050}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1 &326068281 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 2340399491362873271, guid: 39120fa8a4eed7548b1028b36cda3383, type: 3}
+  m_PrefabInstance: {fileID: 298160890}
+  m_PrefabAsset: {fileID: 0}
+--- !u!4 &326068286 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 158646178524826604, guid: 39120fa8a4eed7548b1028b36cda3383, type: 3}
+  m_PrefabInstance: {fileID: 298160890}
   m_PrefabAsset: {fileID: 0}
 --- !u!1 &329346597
 GameObject:
@@ -11114,7 +11144,7 @@ GameObject:
   - component: {fileID: 573988893}
   m_Layer: 6
   m_Name: TreeWalls
-  m_TagString: Untagged
+  m_TagString: Walls
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -19552,7 +19582,7 @@ GameObject:
   - component: {fileID: 1015588727}
   m_Layer: 6
   m_Name: TreeMaze
-  m_TagString: Untagged
+  m_TagString: Walls
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -20764,6 +20794,7 @@ Transform:
   - {fileID: 138440765}
   - {fileID: 1021844024}
   - {fileID: 996214196}
+  - {fileID: 326068286}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1119213375
@@ -41682,5 +41713,4 @@ SceneRoots:
   - {fileID: 573988893}
   - {fileID: 1821430002}
   - {fileID: 181447282}
-  - {fileID: 298160890}
   - {fileID: 1168843762}
