@@ -48,7 +48,7 @@ public class GameManager : MonoBehaviour
     {
         GameData.Instance.FullReset();
         Time.timeScale = 1f;
-        SceneManager.LoadScene("PacMan");
+        SceneManager.LoadScene(SceneManager.GetActiveScene().name);
     }
 
     // Wired to WinPanel "Main Menu" button.
