@@ -3790,6 +3790,18 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 2057487505}
     m_Modifications:
+    - target: {fileID: 197779174763928768, guid: 28080b990b78d8144bc72295cd25fa96, type: 3}
+      propertyPath: Priority
+      value: 256
+      objectReference: {fileID: 0}
+    - target: {fileID: 197779174763928768, guid: 28080b990b78d8144bc72295cd25fa96, type: 3}
+      propertyPath: MinDistance
+      value: 495.0495
+      objectReference: {fileID: 0}
+    - target: {fileID: 197779174763928768, guid: 28080b990b78d8144bc72295cd25fa96, type: 3}
+      propertyPath: reverbZoneMixCustomCurve.m_Curve.Array.data[0].value
+      value: 0.749
+      objectReference: {fileID: 0}
     - target: {fileID: 7166990678216014234, guid: 28080b990b78d8144bc72295cd25fa96, type: 3}
       propertyPath: m_LocalPosition.x
       value: 13.93

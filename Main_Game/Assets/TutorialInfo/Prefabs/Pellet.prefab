@@ -133,9 +133,9 @@ AudioSource:
   Mute: 0
   Spatialize: 0
   SpatializePostEffects: 0
-  Priority: 128
+  Priority: 256
   DopplerLevel: 1
-  MinDistance: 1
+  MinDistance: 495.0495
   MaxDistance: 500
   Pan2D: 0
   rolloffMode: 0
@@ -223,5 +223,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 804b40a8bf5f2b84fb18a4cf5f69cece, type: 3}
   m_Name: 
   m_EditorClassIdentifier: '::'
-  playerSound: {fileID: 8300000, guid: 37f34806c652ff14db060a085c702add, type: 3}
+  playerSound: {fileID: 0}
   enemySound: {fileID: 8300000, guid: 8abd225d042442a46b5a621033a7eee4, type: 3}
