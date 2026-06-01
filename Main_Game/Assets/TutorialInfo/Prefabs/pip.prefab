@@ -13,6 +13,7 @@ GameObject:
   - component: {fileID: 6586866283225151902}
   - component: {fileID: 1662970621656087973}
   - component: {fileID: 166187437150428369}
+  - component: {fileID: -4077932220671430333}
   m_Layer: 0
   m_Name: pip
   m_TagString: Pip
@@ -124,7 +125,7 @@ AudioSource:
   serializedVersion: 4
   OutputAudioMixerGroup: {fileID: 0}
   m_audioClip: {fileID: 0}
-  m_Resource: {fileID: 8300000, guid: 37f34806c652ff14db060a085c702add, type: 3}
+  m_Resource: {fileID: 0}
   m_PlayOnAwake: 0
   m_Volume: 1
   m_Pitch: 1
@@ -210,3 +211,16 @@ AudioSource:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
+--- !u!114 &-4077932220671430333
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2311845114975510311}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3043e1056c6370540a3cefa3a2cf8cf4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: '::'
+  playerSound: {fileID: 8300000, guid: 620807c606a619844beadebbbcfad7d0, type: 3}
