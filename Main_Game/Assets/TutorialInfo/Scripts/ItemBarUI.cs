@@ -1,4 +1,5 @@
 using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -12,6 +13,11 @@ public class ItemBarUI : MonoBehaviour
     [Header("Scene References")]
     public MinimapController minimapController;
 
+    [Header("Item Use Sounds")]
+    public AudioSource audioSource;
+    public ItemUseSound[] useSounds;
+
+    private readonly Dictionary<ItemType, AudioClip> useSoundByType = new Dictionary<ItemType, AudioClip>();
     private PlayerMovement playerMovement;
     private PlayerStatus   playerStatus;
     private PacAI          pacAI;
@@ -23,6 +29,17 @@ public class ItemBarUI : MonoBehaviour
         playerMovement = Object.FindAnyObjectByType<PlayerMovement>();
         playerStatus   = Object.FindAnyObjectByType<PlayerStatus>();
         pacAI          = Object.FindAnyObjectByType<PacAI>();
+
+        useSoundByType.Clear();
+        if (useSounds != null)
+        {
+            foreach (ItemUseSound entry in useSounds)
+            {
+                if (entry.clip != null)
+                    useSoundByType[entry.item] = entry.clip;
+            }
+        }
+
         RefreshSlots();
     }
 
@@ -46,6 +63,13 @@ public class ItemBarUI : MonoBehaviour
         }
     }
 
+    void PlayUseSound(ItemType type)
+    {
+        if (audioSource == null) return;
+        if (!useSoundByType.TryGetValue(type, out AudioClip clip) || clip == null) return;
+        audioSource.PlayOneShot(clip);
+    }
+
     void TryActivateSlot(int index)
     {
         if (slotActive[index]) return;
@@ -53,6 +77,7 @@ public class ItemBarUI : MonoBehaviour
 
         ItemType type = GameData.Instance.Inventory[index];
         slotActive[index] = true;
+        PlayUseSound(type);
 
         if (type == ItemType.Shield)
         {
@@ -149,4 +174,11 @@ public class ItemBarUI : MonoBehaviour
         for (int i = GameData.Instance.Inventory.Count; i < 5; i++)
             slotActive[i] = false;
     }
+}
+
+[System.Serializable]
+public struct ItemUseSound
+{
+    public ItemType item;
+    public AudioClip clip;
 }
