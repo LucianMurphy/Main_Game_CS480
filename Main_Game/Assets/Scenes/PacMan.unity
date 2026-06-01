@@ -4644,15 +4644,15 @@ MonoBehaviour:
   audioSource: {fileID: 1738996432}
   useSounds:
   - item: 0
-    clip: {fileID: 0}
-  - item: 0
-    clip: {fileID: 0}
-  - item: 0
-    clip: {fileID: 0}
-  - item: 0
-    clip: {fileID: 0}
-  - item: 0
-    clip: {fileID: 0}
+    clip: {fileID: 8300000, guid: 733d94aa21a45674499d9e586f0e667e, type: 3}
+  - item: 1
+    clip: {fileID: 8300000, guid: d64da35dec267d04291e1e9313daa3fc, type: 3}
+  - item: 2
+    clip: {fileID: 8300000, guid: a97339797763c8d4ebeaa452b67cd68d, type: 3}
+  - item: 3
+    clip: {fileID: 8300000, guid: 8b1260c35f6e8904fa6d18def2a49371, type: 3}
+  - item: 4
+    clip: {fileID: 8300000, guid: 5605f0ee55684ca4c86ef67b0243a3c9, type: 3}
 --- !u!4 &1738996431
 Transform:
   m_ObjectHideFlags: 0
