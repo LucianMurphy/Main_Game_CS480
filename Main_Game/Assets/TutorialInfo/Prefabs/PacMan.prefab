@@ -11,14 +11,13 @@ GameObject:
   - component: {fileID: 5778910178475312842}
   - component: {fileID: 7475528569712517897}
   - component: {fileID: 5695454112865698091}
-  - component: {fileID: 7710800410328520092}
   - component: {fileID: 3056500377609458562}
   - component: {fileID: 6670685763906740342}
   - component: {fileID: 2003112330739471531}
   - component: {fileID: 1963565289245279033}
   - component: {fileID: 1021610630816934548}
-  - component: {fileID: -1230924287514377850}
-  - component: {fileID: -1833045716774985406}
+  - component: {fileID: 4166967674040647277}
+  - component: {fileID: 3018588440454901067}
   m_Layer: 0
   m_Name: PacMan
   m_TagString: PacMan
@@ -100,27 +99,6 @@ MeshRenderer:
   m_SortingOrder: 0
   m_MaskInteraction: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!135 &7710800410328520092
-SphereCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7876321719041048999}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 1
-  m_ProvidesContacts: 0
-  m_Enabled: 1
-  serializedVersion: 3
-  m_Radius: 0.5
-  m_Center: {x: 0, y: 0.5, z: 0}
 --- !u!114 &3056500377609458562
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -140,13 +118,13 @@ MonoBehaviour:
   isGhostScared: 0
   specificEscapeWalls:
   - {fileID: 0}
-  - {fileID: 0}
   escape_walls: 0
   statusText: {fileID: 0}
   groundLayer:
     serializedVersion: 2
-    m_Bits: 0
+    m_Bits: 128
   heightOffset: 0.5
+  riggedVisualPrefab: {fileID: 0}
 --- !u!54 &6670685763906740342
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -183,8 +161,8 @@ Animator:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 7876321719041048999}
   m_Enabled: 1
-  m_Avatar: {fileID: 9000000, guid: 387f98e6cb1c9744e92f93a6cf9ce107, type: 3}
-  m_Controller: {fileID: 0}
+  m_Avatar: {fileID: 9000000, guid: 97b0cd269422460b9c5672eb06af8f7c, type: 3}
+  m_Controller: {fileID: 9100000, guid: 727c5ee11e9e413fa17bba52ac4dca41, type: 2}
   m_CullingMode: 0
   m_UpdateMode: 0
   m_ApplyRootMotion: 0
@@ -207,9 +185,9 @@ AudioSource:
   serializedVersion: 4
   OutputAudioMixerGroup: {fileID: 0}
   m_audioClip: {fileID: 0}
-  m_Resource: {fileID: 0}
+  m_Resource: {fileID: 8300000, guid: 0d3e58bb90924afba39e665277b5f80a, type: 3}
   m_PlayOnAwake: 1
-  m_Volume: 1
+  m_Volume: 0.5
   m_Pitch: 1
   Loop: 1
   Mute: 0
@@ -300,7 +278,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 7876321719041048999}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 2696dec06cf910f49a5aaea905b7049b, type: 3}
   m_Name: 
@@ -309,23 +287,30 @@ MonoBehaviour:
   clipA: {fileID: 8300000, guid: bd30d9b67167e9740907662860d682ca, type: 3}
   clipB: {fileID: 8300000, guid: 4a17b36155c8f38448424cb13ef0de5e, type: 3}
   delayBetweenSounds: 0.1
---- !u!111 &-1230924287514377850
-Animation:
+--- !u!136 &4166967674040647277
+CapsuleCollider:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 7876321719041048999}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 1
+  m_ProvidesContacts: 0
   m_Enabled: 1
-  serializedVersion: 4
-  m_Animation: {fileID: 0}
-  m_Animations: []
-  m_WrapMode: 0
-  m_PlayAutomatically: 1
-  m_AnimatePhysics: 0
-  m_UpdateMode: 0
-  m_CullingType: 0
---- !u!114 &-1833045716774985406
+  serializedVersion: 2
+  m_Radius: 0.86976165
+  m_Height: 2.7875843
+  m_Direction: 1
+  m_Center: {x: 0, y: 1, z: 0}
+--- !u!114 &3018588440454901067
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}

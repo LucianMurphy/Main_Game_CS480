@@ -24780,6 +24780,14 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 8300000, guid: 13f811e8cfd1c7f43aef92ce9074e5b4, type: 3}
     - target: {fileID: 3056500377609458562, guid: 6ed56ed6234a9ee4b85ae7deedc910b4, type: 3}
+      propertyPath: riggedVisualPrefab
+      value: 
+      objectReference: {fileID: 100100000, guid: c0ec2cd63f93487d92d6623d393c83ba, type: 3}
+    - target: {fileID: 4607728610933143100, guid: 387f98e6cb1c9744e92f93a6cf9ce107, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3056500377609458562, guid: 6ed56ed6234a9ee4b85ae7deedc910b4, type: 3}
       propertyPath: objectA
       value: 
       objectReference: {fileID: 0}

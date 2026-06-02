@@ -28,7 +28,16 @@ public class PacAI : MonoBehaviour
     public LayerMask groundLayer;
     public float heightOffset = 0.5f;
 
+    [Header("Animation")]
+    [Tooltip("Drag Assets/#NVJOB Slender/Slender/Prefab/Slender.prefab here.")]
+    public Object riggedVisualPrefab;
+
+    private static readonly int SpeedParam = Animator.StringToHash("Speed");
+
     private Rigidbody rb;
+    private Animator locomotionAnimator;
+    private Vector3 lastAnimPosition;
+    private bool hasSpeedParameter;
   
    
 
@@ -42,22 +51,27 @@ public class PacAI : MonoBehaviour
         rb = GetComponent<Rigidbody>();
         ghosts = GameObject.FindGameObjectsWithTag("Ghost");
         if (statusText != null) statusText.text = "<b><color=black>Objective:</color></b> <color=green>Hunt Pac-Man</color>";
+
+        SetupLocomotionAnimation();
+        lastAnimPosition = transform.position;
     }
 
     void Update()
     {
-        if (isStunned) return;
-
-        thinkTimer += Time.deltaTime;
-        if (thinkTimer >= 0.15f)
+        if (!isStunned)
         {
-            ghosts = GameObject.FindGameObjectsWithTag("Ghost");
-            currentDir = GetBestMove();
-            thinkTimer = 0f;
-        }
-        
+            thinkTimer += Time.deltaTime;
+            if (thinkTimer >= 0.15f)
+            {
+                ghosts = GameObject.FindGameObjectsWithTag("Ghost");
+                currentDir = GetBestMove();
+                thinkTimer = 0f;
+            }
 
-        MoveContinuous();
+            MoveContinuous();
+        }
+
+        UpdateLocomotionAnimation();
     }
 
     public void Stun(float duration)
@@ -91,6 +105,155 @@ public class PacAI : MonoBehaviour
             return false;
         }
         return true;
+    }
+
+    void SetupLocomotionAnimation()
+    {
+        Animation legacyAnimation = GetComponent<Animation>();
+        if (legacyAnimation != null)
+            Destroy(legacyAnimation);
+
+        SkinnedMeshRenderer brokenRootSkin = GetComponent<SkinnedMeshRenderer>();
+        if (brokenRootSkin != null)
+            Destroy(brokenRootSkin);
+
+        if (!HasValidSkinnedRig())
+            TrySpawnRiggedVisual();
+
+        locomotionAnimator = ResolveLocomotionAnimator();
+        if (locomotionAnimator == null)
+            return;
+
+        locomotionAnimator.applyRootMotion = false;
+        locomotionAnimator.cullingMode = AnimatorCullingMode.AlwaysAnimate;
+        hasSpeedParameter = HasAnimatorParameter(locomotionAnimator, SpeedParam, AnimatorControllerParameterType.Float);
+        locomotionAnimator.SetFloat(SpeedParam, 0f);
+    }
+
+    void TrySpawnRiggedVisual()
+    {
+        if (riggedVisualPrefab == null)
+            return;
+
+        GameObject visual = SpawnPrefabAsGameObject(riggedVisualPrefab);
+        if (visual == null)
+            return;
+
+        visual.name = riggedVisualPrefab.name.Replace(".prefab", "") + "_Visual";
+        visual.transform.SetParent(transform, false);
+        visual.transform.localPosition = Vector3.zero;
+        visual.transform.localRotation = Quaternion.identity;
+        visual.transform.localScale = Vector3.one;
+
+        foreach (SlenderExample slenderExample in visual.GetComponentsInChildren<SlenderExample>())
+            slenderExample.enabled = false;
+
+        foreach (AudioSource childAudio in visual.GetComponentsInChildren<AudioSource>())
+            childAudio.enabled = false;
+
+        MeshRenderer staticMesh = GetComponent<MeshRenderer>();
+        if (staticMesh != null)
+            staticMesh.enabled = false;
+    }
+
+    static GameObject SpawnPrefabAsGameObject(Object prefabAsset)
+    {
+        if (prefabAsset == null)
+            return null;
+
+        Object instance = Object.Instantiate(prefabAsset);
+        if (instance is GameObject gameObject)
+            return gameObject;
+
+        if (instance is Component component)
+            return component.gameObject;
+
+        if (instance != null)
+            Object.Destroy(instance);
+
+        Debug.LogError(
+            $"Rigged Visual Prefab must be a GameObject prefab (use Assets/#NVJOB Slender/Slender/Prefab/Slender.prefab). Got: {prefabAsset.name} ({prefabAsset.GetType().Name})",
+            prefabAsset);
+        return null;
+    }
+
+    bool HasValidSkinnedRig()
+    {
+        foreach (SkinnedMeshRenderer skinnedMesh in GetComponentsInChildren<SkinnedMeshRenderer>(true))
+        {
+            if (!skinnedMesh.gameObject.activeInHierarchy)
+                continue;
+
+            if (skinnedMesh.bones != null && skinnedMesh.bones.Length > 0)
+                return true;
+        }
+        return false;
+    }
+
+    Animator ResolveLocomotionAnimator()
+    {
+        Animator rootAnimator = GetComponent<Animator>();
+
+        foreach (Animator candidate in GetComponentsInChildren<Animator>(true))
+        {
+            if (candidate.runtimeAnimatorController == null)
+                continue;
+
+            if (candidate.gameObject != gameObject)
+            {
+                if (rootAnimator != null)
+                    rootAnimator.enabled = false;
+
+                MeshRenderer staticMesh = GetComponent<MeshRenderer>();
+                if (staticMesh != null)
+                    staticMesh.enabled = false;
+
+                return candidate;
+            }
+        }
+
+        return rootAnimator != null && rootAnimator.runtimeAnimatorController != null ? rootAnimator : null;
+    }
+
+    void UpdateLocomotionAnimation()
+    {
+        if (locomotionAnimator == null)
+            return;
+
+        float locomotionSpeed = 0f;
+        if (!isStunned)
+        {
+            float moved = (transform.position - lastAnimPosition).magnitude;
+            locomotionSpeed = moved > 0.02f ? 1f : 0f;
+        }
+
+        lastAnimPosition = transform.position;
+
+        if (hasSpeedParameter)
+        {
+            locomotionAnimator.SetFloat(SpeedParam, locomotionSpeed);
+            return;
+        }
+
+        int targetState = locomotionSpeed > 0f
+            ? Animator.StringToHash("Walk")
+            : Animator.StringToHash("Idle");
+
+        if (!locomotionAnimator.HasState(0, targetState))
+            return;
+
+        if (locomotionAnimator.GetCurrentAnimatorStateInfo(0).shortNameHash != targetState)
+            locomotionAnimator.CrossFade(targetState, 0.12f);
+    }
+
+    static bool HasAnimatorParameter(Animator animator, int hash, AnimatorControllerParameterType type)
+    {
+        foreach (AnimatorControllerParameter parameter in animator.parameters)
+        {
+            if (parameter.nameHash == hash && parameter.type == type)
+                return true;
+        }
+        return false;
     }
 
     void MoveContinuous()

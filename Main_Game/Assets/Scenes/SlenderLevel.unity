@@ -4206,6 +4206,14 @@ PrefabInstance:
       propertyPath: m_Avatar
       value: 
       objectReference: {fileID: 9000000, guid: 97b0cd269422460b9c5672eb06af8f7c, type: 3}
+    - target: {fileID: 2003112330739471531, guid: 6ed56ed6234a9ee4b85ae7deedc910b4, type: 3}
+      propertyPath: m_Controller
+      value: 
+      objectReference: {fileID: 9100000, guid: 727c5ee11e9e413fa17bba52ac4dca41, type: 2}
+    - target: {fileID: 3056500377609458562, guid: 6ed56ed6234a9ee4b85ae7deedc910b4, type: 3}
+      propertyPath: riggedVisualPrefab
+      value: 
+      objectReference: {fileID: 100100000, guid: c0ec2cd63f93487d92d6623d393c83ba, type: 3}
     - target: {fileID: 3056500377609458562, guid: 6ed56ed6234a9ee4b85ae7deedc910b4, type: 3}
       propertyPath: statusText
       value: 
