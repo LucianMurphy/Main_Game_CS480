@@ -19,7 +19,7 @@ public class MainMenuController : MonoBehaviour
 
     public void LoadVampireHunter()
     {
-        SceneManager.LoadScene("Mansion");
+        SceneManager.LoadScene("HedgeMaze");
     }
 
     public void LoadSlenderMan()

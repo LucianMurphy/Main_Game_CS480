@@ -31,10 +31,14 @@ public class PacAI : MonoBehaviour
     private bool wasGhostScared = false;
     private GameObject[] players;
 
-    void Start()
+    void Awake()
     {
         agent = GetComponent<NavMeshAgent>();
-        agent.speed = speed;
+        agent.enabled = false;
+    }
+
+    void Start()
+    {
         players = GameObject.FindGameObjectsWithTag("Ghost");
         wasGhostScared = isGhostScared;
         if (statusText != null) statusText.text = "<b><color=black>Objective:</color></b> <color=green>Hunt Pac-Man</color>";
@@ -73,7 +77,7 @@ public class PacAI : MonoBehaviour
         {
             GameObject nearest = GetNearestPlayer();
             if (nearest != null)
-                agent.SetDestination(nearest.transform.position);
+                SetDestinationSafe(nearest.transform.position);
         }
 
         if (isGhostScared && specificEscapeWalls != null)
@@ -103,7 +107,7 @@ public class PacAI : MonoBehaviour
             state = AIState.HuntingPlayer;
             GameObject nearest = GetNearestPlayer();
             if (nearest != null)
-                agent.SetDestination(nearest.transform.position);
+                SetDestinationSafe(nearest.transform.position);
             return;
         }
 
@@ -111,14 +115,14 @@ public class PacAI : MonoBehaviour
         if (visiblePlayer != null)
         {
             state = AIState.FleeingPlayer;
-            agent.SetDestination(FindFleeDestination(visiblePlayer.transform.position));
+            SetDestinationSafe(FindFleeDestination(visiblePlayer.transform.position));
             return;
         }
 
         state = AIState.SeekingPellet;
         GameObject target = FindNearestTagged("Pellet") ?? FindNearestTagged("Pip");
         if (target != null)
-            agent.SetDestination(target.transform.position);
+            SetDestinationSafe(target.transform.position);
     }
 
     // ── Flee Destination ──────────────────────────────────────────────────────
@@ -141,6 +145,12 @@ public class PacAI : MonoBehaviour
         }
 
         return bestPoint;
+    }
+
+    void SetDestinationSafe(Vector3 pos)
+    {
+        if (NavMesh.SamplePosition(pos, out NavMeshHit hit, 5f, NavMesh.AllAreas))
+            agent.SetDestination(hit.position);
     }
 
     // ── Detection ─────────────────────────────────────────────────────────────
@@ -192,9 +202,10 @@ public class PacAI : MonoBehaviour
     {
         yield return null;
         if (NavMesh.SamplePosition(transform.position, out NavMeshHit hit, 10f, NavMesh.AllAreas))
-            agent.Warp(hit.position);
-        else
-            agent.Warp(transform.position);
+            transform.position = hit.position;
+        agent.enabled = true;
+        agent.speed = speed;
+        yield return null;
         yield return null;
         Replan();
     }
