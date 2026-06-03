@@ -69,7 +69,6 @@ public class PacAI : MonoBehaviour
             Replan();
         }
 
-        // Keep hunting destination current since the player moves every frame
         if (state == AIState.HuntingPlayer)
         {
             GameObject nearest = GetNearestPlayer();
@@ -85,9 +84,6 @@ public class PacAI : MonoBehaviour
         if (!agent.isOnNavMesh) return;
 
         players = GameObject.FindGameObjectsWithTag("Ghost");
-        Debug.Log($"[PacAI] Players found: {players.Length}");
-        foreach (var p in players)
-            Debug.Log($"[PacAI] Player: {p.name} dist:{Vector3.Distance(transform.position, p.transform.position):F1} visionRange:{visionRange}");
 
         if (isGhostScared)
         {
@@ -107,9 +103,7 @@ public class PacAI : MonoBehaviour
         }
 
         state = AIState.SeekingPellet;
-        GameObject pellet = FindNearestTagged("Pellet");
-        GameObject pip = FindNearestTagged("Pip");
-        GameObject target = pellet ?? pip;
+        GameObject target = FindNearestTagged("Pellet") ?? FindNearestTagged("Pip");
         if (target != null)
             agent.SetDestination(target.transform.position);
     }
@@ -121,7 +115,6 @@ public class PacAI : MonoBehaviour
         Vector3 bestPoint = transform.position;
         float bestScore = -1f;
 
-        // Sample 8 directions around the AI and pick the NavMesh point farthest from the threat
         for (int i = 0; i < 8; i++)
         {
             float angle = i * 45f * Mathf.Deg2Rad;
@@ -180,6 +173,8 @@ public class PacAI : MonoBehaviour
 
     // ── Stun ──────────────────────────────────────────────────────────────────
 
+    public void Stun(float duration) => StartCoroutine(StunRoutine(duration));
+
     private IEnumerator DelayedStart()
     {
         yield return null;
@@ -190,8 +185,6 @@ public class PacAI : MonoBehaviour
         yield return null;
         Replan();
     }
-
-    public void Stun(float duration) => StartCoroutine(StunRoutine(duration));
 
     private IEnumerator StunRoutine(float duration)
     {
