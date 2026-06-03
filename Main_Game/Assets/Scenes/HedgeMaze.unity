@@ -11504,6 +11504,16 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 6ebd59fadfca92447a2023576781bebb, type: 3}
+--- !u!1 &350203742 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 6199265853564477142, guid: 6ebd59fadfca92447a2023576781bebb, type: 3}
+  m_PrefabInstance: {fileID: 350203741}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1 &350203743 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 1960425572506226917, guid: 6ebd59fadfca92447a2023576781bebb, type: 3}
+  m_PrefabInstance: {fileID: 350203741}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &355595614
 GameObject:
   m_ObjectHideFlags: 0
@@ -17729,13 +17739,17 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 100100000, guid: c0ec2cd63f93487d92d6623d393c83ba, type: 3}
     - target: {fileID: 3056500377609458562, guid: 6ed56ed6234a9ee4b85ae7deedc910b4, type: 3}
+      propertyPath: specificEscapeWalls.Array.size
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 3056500377609458562, guid: 6ed56ed6234a9ee4b85ae7deedc910b4, type: 3}
       propertyPath: 'specificEscapeWalls.Array.data[0]'
       value: 
-      objectReference: {fileID: 0}
+      objectReference: {fileID: 350203743}
     - target: {fileID: 3056500377609458562, guid: 6ed56ed6234a9ee4b85ae7deedc910b4, type: 3}
       propertyPath: 'specificEscapeWalls.Array.data[1]'
       value: 
-      objectReference: {fileID: 0}
+      objectReference: {fileID: 350203742}
     - target: {fileID: 5695454112865698091, guid: 6ed56ed6234a9ee4b85ae7deedc910b4, type: 3}
       propertyPath: m_Materials.Array.size
       value: 1
