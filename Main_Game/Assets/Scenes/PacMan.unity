@@ -3415,6 +3415,10 @@ PrefabInstance:
       propertyPath: m_Layer
       value: 8
       objectReference: {fileID: 0}
+    - target: {fileID: 2574676965650784230, guid: 968c1f0d2d753d54ca12533606e36344, type: 3}
+      propertyPath: m_IsTrigger
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 2627206748502526264, guid: 968c1f0d2d753d54ca12533606e36344, type: 3}
       propertyPath: m_Layer
       value: 8
@@ -3442,6 +3446,10 @@ PrefabInstance:
     - target: {fileID: 2869762338984183222, guid: 968c1f0d2d753d54ca12533606e36344, type: 3}
       propertyPath: m_Name
       value: Escape_wall
+      objectReference: {fileID: 0}
+    - target: {fileID: 2869762338984183222, guid: 968c1f0d2d753d54ca12533606e36344, type: 3}
+      propertyPath: m_TagString
+      value: escape_walls
       objectReference: {fileID: 0}
     - target: {fileID: 2878815778774505279, guid: 968c1f0d2d753d54ca12533606e36344, type: 3}
       propertyPath: m_Layer
@@ -3570,6 +3578,10 @@ PrefabInstance:
     - target: {fileID: 3916591376802742868, guid: 968c1f0d2d753d54ca12533606e36344, type: 3}
       propertyPath: m_Name
       value: Escape_wall
+      objectReference: {fileID: 0}
+    - target: {fileID: 3916591376802742868, guid: 968c1f0d2d753d54ca12533606e36344, type: 3}
+      propertyPath: m_TagString
+      value: escape_walls
       objectReference: {fileID: 0}
     - target: {fileID: 3952455650642816504, guid: 968c1f0d2d753d54ca12533606e36344, type: 3}
       propertyPath: m_Layer
@@ -3822,6 +3834,10 @@ PrefabInstance:
     - target: {fileID: 5925374997070467358, guid: 968c1f0d2d753d54ca12533606e36344, type: 3}
       propertyPath: m_Layer
       value: 8
+      objectReference: {fileID: 0}
+    - target: {fileID: 5977902794883899318, guid: 968c1f0d2d753d54ca12533606e36344, type: 3}
+      propertyPath: m_IsTrigger
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6033543346118692870, guid: 968c1f0d2d753d54ca12533606e36344, type: 3}
       propertyPath: m_Layer
@@ -4488,6 +4504,10 @@ PrefabInstance:
       propertyPath: m_Enabled
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 3056500377609458562, guid: 6ed56ed6234a9ee4b85ae7deedc910b4, type: 3}
+      propertyPath: statusText
+      value: 
+      objectReference: {fileID: 750429279}
     - target: {fileID: 3056500377609458562, guid: 6ed56ed6234a9ee4b85ae7deedc910b4, type: 3}
       propertyPath: 'specificEscapeWalls.Array.data[0]'
       value: 
@@ -5753,6 +5773,8 @@ MonoBehaviour:
   - {fileID: 33279064}
   - {fileID: 161538572}
   minimapController: {fileID: 0}
+  audioSource: {fileID: 0}
+  useSounds: []
 --- !u!4 &1738996431
 Transform:
   m_ObjectHideFlags: 0
@@ -7758,7 +7780,6 @@ SceneRoots:
   - {fileID: 913823034}
   - {fileID: 1065559461}
   - {fileID: 1542970573}
-  - {fileID: 1821430002}
   - {fileID: 1597986625}
   - {fileID: 578714919}
   - {fileID: 452751911}
@@ -7768,3 +7789,4 @@ SceneRoots:
   - {fileID: 1076816444}
   - {fileID: 1190278718}
   - {fileID: 405529900}
+  - {fileID: 1821430002}

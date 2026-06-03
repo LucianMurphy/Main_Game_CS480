@@ -75,6 +75,19 @@ public class PacAI : MonoBehaviour
             if (nearest != null)
                 agent.SetDestination(nearest.transform.position);
         }
+
+        if (isGhostScared && specificEscapeWalls != null)
+        {
+            foreach (GameObject wall in specificEscapeWalls)
+            {
+                if (wall != null && Vector3.Distance(transform.position, wall.transform.position) < 1.5f)
+                {
+                    GameManager gm = FindObjectOfType<GameManager>();
+                    if (gm != null) gm.Win();
+                    return;
+                }
+            }
+        }
     }
 
     // ── Decision Making ───────────────────────────────────────────────────────
