@@ -1,7 +1,6 @@
 using UnityEngine;
 using System.Collections;
-using System.Collections.Generic;
-using System.Linq;
+using UnityEngine.AI;
 using TMPro;
 
 public class PacAI : MonoBehaviour
@@ -10,6 +9,7 @@ public class PacAI : MonoBehaviour
     public float speed = 5.0f;
     public LayerMask wallLayer;
     public bool isGhostScared = false;
+
     [Header("Escape Wall Setup")]
     public GameObject[] specificEscapeWalls;
     public bool escape_walls = false;
@@ -17,302 +17,196 @@ public class PacAI : MonoBehaviour
     [Header("UI")]
     public TMP_Text statusText;
 
-    private Vector3 currentDir = Vector3.forward;
-    private float thinkTimer = 0f;
+    [Header("AI Settings")]
+    public float visionRange = 10f;
+    public float fleeSearchRadius = 15f;
+    public float replanInterval = 0.3f;
+
+    private enum AIState { SeekingPellet, FleeingPlayer, HuntingPlayer }
+    private AIState state = AIState.SeekingPellet;
+
+    private NavMeshAgent agent;
     private bool isStunned = false;
+    private float replanTimer = 0f;
+    private bool wasGhostScared = false;
+    private GameObject[] players;
 
-    private float lastSeenGhost = 0f;
-    private GameObject[] ghosts;
-
-    [Header("Terrain Setup")]
-    public LayerMask groundLayer;
-    public float heightOffset = 0.5f;
-
-    private Rigidbody rb;
-  
-   
-
-    
-        
-
-
-    
     void Start()
     {
-        rb = GetComponent<Rigidbody>();
-        ghosts = GameObject.FindGameObjectsWithTag("Ghost");
+        agent = GetComponent<NavMeshAgent>();
+        agent.speed = speed;
+        players = GameObject.FindGameObjectsWithTag("Ghost");
+        wasGhostScared = isGhostScared;
         if (statusText != null) statusText.text = "<b><color=black>Objective:</color></b> <color=green>Hunt Pac-Man</color>";
+        StartCoroutine(DelayedStart());
     }
 
     void Update()
     {
         if (isStunned) return;
 
-        thinkTimer += Time.deltaTime;
-        if (thinkTimer >= 0.15f)
+        replanTimer += Time.deltaTime;
+
+        bool scaredChanged = isGhostScared != wasGhostScared;
+
+        if (state == AIState.FleeingPlayer)
         {
-            ghosts = GameObject.FindGameObjectsWithTag("Ghost");
-            currentDir = GetBestMove();
-            thinkTimer = 0f;
+            bool playerGone = GetVisiblePlayer() == null;
+            bool reachedFleePoint = agent.remainingDistance < 0.5f && !agent.pathPending;
+            if (scaredChanged || playerGone || reachedFleePoint)
+            {
+                wasGhostScared = isGhostScared;
+                replanTimer = 0f;
+                Replan();
+            }
+            return;
         }
-        
 
-        MoveContinuous();
-    }
-
-    public void Stun(float duration)
-    {
-        StartCoroutine(StunRoutine(duration));
-    }
-
-    private Vector3 GetTerrainPos(Vector3 targetPos)
-    {
-        Vector3 rayStart = new Vector3(targetPos.x, targetPos.y + 1f, targetPos.z);
-        if (Physics.Raycast(rayStart, Vector3.down, out RaycastHit hit, 10f, groundLayer))
+        if (scaredChanged || replanTimer >= replanInterval)
         {
-            return new Vector3(targetPos.x, hit.point.y + heightOffset, targetPos.z);
+            wasGhostScared = isGhostScared;
+            replanTimer = 0f;
+            Replan();
         }
-        return targetPos;
+
+        // Keep hunting destination current since the player moves every frame
+        if (state == AIState.HuntingPlayer)
+        {
+            GameObject nearest = GetNearestPlayer();
+            if (nearest != null)
+                agent.SetDestination(nearest.transform.position);
+        }
     }
 
-    private System.Collections.IEnumerator StunRoutine(float duration)
+    // ── Decision Making ───────────────────────────────────────────────────────
+
+    void Replan()
+    {
+        if (!agent.isOnNavMesh) return;
+
+        players = GameObject.FindGameObjectsWithTag("Ghost");
+        Debug.Log($"[PacAI] Players found: {players.Length}");
+        foreach (var p in players)
+            Debug.Log($"[PacAI] Player: {p.name} dist:{Vector3.Distance(transform.position, p.transform.position):F1} visionRange:{visionRange}");
+
+        if (isGhostScared)
+        {
+            state = AIState.HuntingPlayer;
+            GameObject nearest = GetNearestPlayer();
+            if (nearest != null)
+                agent.SetDestination(nearest.transform.position);
+            return;
+        }
+
+        GameObject visiblePlayer = GetVisiblePlayer();
+        if (visiblePlayer != null)
+        {
+            state = AIState.FleeingPlayer;
+            agent.SetDestination(FindFleeDestination(visiblePlayer.transform.position));
+            return;
+        }
+
+        state = AIState.SeekingPellet;
+        GameObject pellet = FindNearestTagged("Pellet");
+        GameObject pip = FindNearestTagged("Pip");
+        GameObject target = pellet ?? pip;
+        if (target != null)
+            agent.SetDestination(target.transform.position);
+    }
+
+    // ── Flee Destination ──────────────────────────────────────────────────────
+
+    Vector3 FindFleeDestination(Vector3 threatPos)
+    {
+        Vector3 bestPoint = transform.position;
+        float bestScore = -1f;
+
+        // Sample 8 directions around the AI and pick the NavMesh point farthest from the threat
+        for (int i = 0; i < 8; i++)
+        {
+            float angle = i * 45f * Mathf.Deg2Rad;
+            Vector3 candidate = transform.position + new Vector3(Mathf.Cos(angle), 0, Mathf.Sin(angle)) * fleeSearchRadius;
+
+            if (NavMesh.SamplePosition(candidate, out NavMeshHit hit, fleeSearchRadius, NavMesh.AllAreas))
+            {
+                float score = Vector3.Distance(hit.position, threatPos);
+                if (score > bestScore) { bestScore = score; bestPoint = hit.position; }
+            }
+        }
+
+        return bestPoint;
+    }
+
+    // ── Detection ─────────────────────────────────────────────────────────────
+
+    GameObject GetVisiblePlayer()
+    {
+        foreach (GameObject p in players)
+        {
+            if (p == null) continue;
+            float dist = Vector3.Distance(transform.position, p.transform.position);
+            if (dist > visionRange) continue;
+            return p;
+        }
+        return null;
+    }
+
+    GameObject GetNearestPlayer()
+    {
+        GameObject nearest = null;
+        float nearestDist = float.MaxValue;
+        foreach (GameObject p in players)
+        {
+            if (p == null) continue;
+            float d = Vector3.Distance(transform.position, p.transform.position);
+            if (d < nearestDist) { nearestDist = d; nearest = p; }
+        }
+        return nearest;
+    }
+
+    GameObject FindNearestTagged(string tag)
+    {
+        GameObject[] objects = GameObject.FindGameObjectsWithTag(tag);
+        if (objects.Length == 0) return null;
+        GameObject nearest = null;
+        float nearestDist = float.MaxValue;
+        foreach (GameObject obj in objects)
+        {
+            float d = Vector3.Distance(transform.position, obj.transform.position);
+            if (d < nearestDist) { nearestDist = d; nearest = obj; }
+        }
+        return nearest;
+    }
+
+    // ── Stun ──────────────────────────────────────────────────────────────────
+
+    private IEnumerator DelayedStart()
+    {
+        yield return null;
+        if (NavMesh.SamplePosition(transform.position, out NavMeshHit hit, 10f, NavMesh.AllAreas))
+            agent.Warp(hit.position);
+        else
+            agent.Warp(transform.position);
+        yield return null;
+        Replan();
+    }
+
+    public void Stun(float duration) => StartCoroutine(StunRoutine(duration));
+
+    private IEnumerator StunRoutine(float duration)
     {
         isStunned = true;
+        agent.isStopped = true;
         yield return new WaitForSeconds(duration);
         isStunned = false;
+        agent.isStopped = false;
     }
 
-    bool CanSeeGhost(GameObject Ghost)
-    {
-        Vector3 directionToGhost = Ghost.transform.position - transform.position;
-        float distanceToGhost = directionToGhost.magnitude;
-        if(Physics.Raycast(transform.position, directionToGhost, out RaycastHit hit, distanceToGhost, wallLayer))
-        {
-            return false;
-        }
-        return true;
-    }
-
-    void MoveContinuous()
-    {
-        Vector3 rayStart = transform.position + (Vector3.up * 0.2f);
-
-        if (!Physics.Raycast(rayStart, currentDir, 0.55f, wallLayer))
-        {
-            Vector3 nextPos = transform.position + currentDir * speed * Time.deltaTime;
-            transform.position = GetTerrainPos(nextPos);
-        }
-        else 
-        {
-            currentDir = GetBestMove();
-        }
-
-        if (currentDir != Vector3.zero)
-        {
-            Quaternion targetRot = Quaternion.LookRotation(currentDir);
-            transform.rotation = Quaternion.Slerp(transform.rotation, targetRot, 15f * Time.deltaTime);
-        }
-    }
-
-    Vector3 GetBestMove()
-    {
-        Vector3[] dirs = { Vector3.forward, Vector3.back, Vector3.left, Vector3.right };
-        Vector3 bestDir = currentDir;
-        float bestScore = float.NegativeInfinity;
-
-        foreach (Vector3 dir in dirs)
-        {
-            Vector3 castStart = transform.position + (Vector3.up * 0.2f);
-            if (Physics.SphereCast(castStart, 0.3f, dir, out RaycastHit hit, 0.6f, wallLayer))
-            {
-                continue;
-            }
-
-            float score = BetterEvaluationScore(transform.position + dir);
-
-            if (Vector3.Dot(dir, currentDir) < -0.9f) score -= 20f;
-            if (dir == currentDir) score += 0.1f; // Lowered momentum bias
-
-            if (score > bestScore)
-            {
-                bestScore = score;
-                bestDir = dir;
-            }
-        }
-        return bestDir;
-    }
-
-    float BetterEvaluationScore(Vector3 pos)
-    {
-        float score = 0;
-        GameObject[] pips = GameObject.FindGameObjectsWithTag("Pip");
-        GameObject[] pellets = GameObject.FindGameObjectsWithTag("Pellet");
-
-        bool seeGhost = false;
-        float nearestGhostPathDist = 999f;
-        float nearestScaredGhostPathDist = 999f;
-
-        foreach (GameObject g in ghosts)
-        {
-            if (g == null) continue;
-            
-            float pathDist = PacAStarToTarget(pos, g.transform.position);
-
-            if (!isGhostScared)
-            {
-                if(CanSeeGhost(g))
-                {
-                    seeGhost = true;
-                    lastSeenGhost = Time.time;
-                    if (pathDist < nearestGhostPathDist) 
-                    {
-                        nearestGhostPathDist = pathDist;
-                    }
-                } 
-            }
-            else
-            {
-                if (pathDist < nearestScaredGhostPathDist) 
-                {
-                    nearestScaredGhostPathDist = pathDist;
-                }
-            }
-        }
-        
-        bool pacPanicing = (Time.time - lastSeenGhost) <= 4.0f;
-        
-        if (!isGhostScared && pacPanicing)
-        {
-            if (seeGhost)
-            {
-                score -= 50.0f / (nearestGhostPathDist + 1.0f);
-            }
-            if (nearestGhostPathDist <= 2f)
-            {
-                score -= 1000.0f / (nearestGhostPathDist + 0.1f);
-            }
-        }
-
-        if (isGhostScared && nearestScaredGhostPathDist < 999f)
-        {
-            score += 500.0f / (nearestScaredGhostPathDist + 1.0f);
-        }
-
-        // ORIGINAL FOOD LOGIC WITH FALLBACK
-        if (pellets.Length > 0)
-        {
-            float pelletDist = PacAStarToTag(pos, "Pellet");
-            if (pelletDist >= 999f)
-            {
-                pelletDist = Vector3.Distance(pos, pellets[0].transform.position);
-            }
-            score += 40.0f / (pelletDist + 1.0f); 
-        }
-
-        // score -= 10f * pips.Length;
-        if (pips.Length > 0 && !pacPanicing)
-        {
-            float foodDist = PacAStarToTag(pos, "Pip");
-            if (foodDist >= 999f)
-            {
-                foodDist = Vector3.Distance(pos, pips[0].transform.position);
-            }
-            score += 1.0f / (foodDist + 1.0f); 
-        }
-
-        return score;
-    }
-
-    // ORIGINAL GHOST A* (Physics Based)
-    float PacAStarToTarget(Vector3 startPos, Vector3 targetPos)
-    {
-        Vector2Int start = new Vector2Int(Mathf.RoundToInt(startPos.x), Mathf.RoundToInt(startPos.z));
-        Vector2Int goal = new Vector2Int(Mathf.RoundToInt(targetPos.x), Mathf.RoundToInt(targetPos.z));
-        
-        var openSet = new PriorityQueue<Vector2Int, float>();
-        var gScore = new Dictionary<Vector2Int, float>();
-        
-        openSet.Enqueue(start, 0);
-        gScore[start] = 0;
-
-        int limit = 0;
-        while (openSet.Count > 0 && limit < 1000) 
-        {
-            limit++;
-            Vector2Int current = openSet.Dequeue();
-
-            if (current == goal) return gScore[current];
-
-            foreach (Vector2Int d in new[] { Vector2Int.up, Vector2Int.down, Vector2Int.left, Vector2Int.right })
-            {
-                Vector2Int neighbor = current + d;
-                Vector3 flatWorld = new Vector3(neighbor.x, transform.position.y, neighbor.y);
-
-                if (!Physics.CheckSphere(flatWorld, 0.45f, wallLayer))
-                {
-                    float tentG = gScore[current] + 1;
-                    if (!gScore.ContainsKey(neighbor) || tentG < gScore[neighbor])
-                    {
-                        gScore[neighbor] = tentG;
-                        float h = Mathf.Abs(neighbor.x - goal.x) + Mathf.Abs(neighbor.y - goal.y);
-                        openSet.Enqueue(neighbor, tentG + h);
-                    }
-                }
-            }
-        }
-        return 999f;
-    }
-
-    // ORIGINAL FOOD A* (Physics Based)
-    private Collider[] detectionBuffer = new Collider[10];
-    float PacAStarToTag(Vector3 startPos, string tag)
-    {
-        Vector2Int start = new Vector2Int(Mathf.RoundToInt(startPos.x), Mathf.RoundToInt(startPos.z));
-        var openSet = new PriorityQueue<Vector2Int, float>();
-        var gScore = new Dictionary<Vector2Int, float>();
-        openSet.Enqueue(start, 0);
-        gScore[start] = 0;
-
-        int limit = 0;
-        while (openSet.Count > 0 && limit < 200) 
-        {
-            limit++;
-            Vector2Int current = openSet.Dequeue();
-
-            Vector3 flatCheckPos = new Vector3(current.x, transform.position.y, current.y);
-
-            int numColliders = Physics.OverlapSphereNonAlloc(flatCheckPos, 0.45f, detectionBuffer);
-            
-            for (int i = 0; i < numColliders; i++)
-            {
-                if (detectionBuffer[i].CompareTag(tag))
-                {
-                    return gScore[current];
-                }
-            }
-
-            foreach (Vector2Int d in new[] { Vector2Int.up, Vector2Int.down, Vector2Int.left, Vector2Int.right })
-            {
-                Vector2Int neighbor = current + d;
-                Vector3 flatWorld = new Vector3(neighbor.x, transform.position.y, neighbor.y);
-                
-                if (!Physics.CheckSphere(flatWorld, 0.45f, wallLayer))
-                {
-                    float tentG = gScore[current] + 1;
-                    if (!gScore.ContainsKey(neighbor) || tentG < gScore[neighbor])
-                    {
-                        gScore[neighbor] = tentG;
-                        openSet.Enqueue(neighbor, tentG);
-                    }
-                }
-            }
-        }
-        return 999f;
-    }
+    // ── Triggers ──────────────────────────────────────────────────────────────
 
     private void OnTriggerEnter(Collider other)
     {
-        if (other.CompareTag("Pip")) 
+        if (other.CompareTag("Pip"))
         {
             Destroy(other.gameObject);
         }
@@ -324,10 +218,7 @@ public class PacAI : MonoBehaviour
             if (statusText != null) statusText.text = "<b><color=black>Objective:</color></b> <color=red>Escape or Stay and Collect</color>";
             foreach (GameObject wall in specificEscapeWalls)
             {
-                if (wall != null)
-                {
-                    wall.tag = "escape_walls";
-                }
+                if (wall != null) wall.tag = "escape_walls";
             }
         }
         else if (other.CompareTag("Ghost"))
@@ -338,22 +229,8 @@ public class PacAI : MonoBehaviour
             GameManager gm = FindObjectOfType<GameManager>();
             if (gm == null) return;
 
-            if (isGhostScared)
-                gm.Lose();
-            else
-                gm.Win();
+            if (isGhostScared) gm.Lose();
+            else gm.Win();
         }
     }
-}
-
-public class PriorityQueue<TElement, TPriority> where TPriority : System.IComparable<TPriority>
-{
-    private List<(TElement Element, TPriority Priority)> elements = new List<(TElement, TPriority)>();
-    public int Count => elements.Count;
-    public void Enqueue(TElement element, TPriority priority)
-    {
-        elements.Add((element, priority));
-        elements.Sort((x, y) => x.Priority.CompareTo(y.Priority));
-    }
-    public TElement Dequeue() { var item = elements[0].Element; elements.RemoveAt(0); return item; }
 }
